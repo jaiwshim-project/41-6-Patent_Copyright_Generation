@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>특허 출원 고도화 | AI-IP Strategy OS</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    .patent-header {
+      background: linear-gradient(135deg, #0f2460 0%, #1e40af 50%, #4c1d95 100%);
+      padding: 2.5rem 2rem;
+      border-bottom: 1px solid rgba(100,180,255,0.15);
+    }
+    /* Header title — gold */
+    .patent-header h1 { color: #fcd34d !important; }
+    .patent-header p  { color: rgba(255,255,255,0.82) !important; }
+
+    .step-panel { display: none; }
+    .step-panel.active { display: block; }
+    .score-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+    .claim-text-area {
+      background: transparent;
+      border: none;
+      width: 100%;
+      color: var(--text-200);
+      font-size: 0.875rem;
+      line-height: 1.8;
+      resize: none;
+      outline: none;
+      font-family: inherit;
+    }
+    .final-spec {
+      background: #fafcff;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 1.75rem;
+    }
+    .risk-meter {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 1.25rem;
+      border-radius: 10px;
+      border: 1.5px solid #e2e8f0;
+      background: #f8fafc;
+      margin-bottom: 0.75rem;
+    }
+    .risk-pct { font-size: 1.5rem; font-weight: 800; min-width: 60px; }
+    @media (max-width: 768px) {
+      .score-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navbar injected by layout.js -->
+
+<!-- Header -->
+<div class="patent-header">
+  <div class="container">
+    <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem">
+      <span style="font-size:2rem">⚙️</span>
+      <div>
+        <h1 style="font-size:1.75rem;font-weight:800">특허 출원 고도화</h1>
+        <p style="color:rgba(255,255,255,0.7);font-size:0.9rem">아이디어 → 기술 분석 → 청구항 설계 → 명세서 완성 (7단계)</p>
+      </div>
+    </div>
+    <div id="projectInfoBar" style="background:rgba(0,0,0,0.2);border-radius:8px;padding:0.75rem 1rem;font-size:0.875rem;color:rgba(255,255,255,0.8)">
+      프로젝트 로딩 중...
+    </div>
+  </div>
+</div>
+
+<!-- Main -->
+<div class="page-content">
+
+  <!-- Step Navigation -->
+  <div class="step-nav-wrap">
+    <button class="step-btn active" id="nav-1" onclick="goStep(1)">
+      <span class="step-n">1</span>핵심 추출
+    </button>
+    <button class="step-btn" id="nav-2" onclick="goStep(2)">
+      <span class="step-n">2</span>선행기술 분석
+    </button>
+    <button class="step-btn" id="nav-3" onclick="goStep(3)">
+      <span class="step-n">3</span>구성요소 분해
+    </button>
+    <button class="step-btn" id="nav-4" onclick="goStep(4)">
+      <span class="step-n">4</span>청구항 설계
+    </button>
+    <button class="step-btn" id="nav-5" onclick="goStep(5)">
+      <span class="step-n">5</span>실시예 생성
+    </button>
+    <button class="step-btn" id="nav-6" onclick="goStep(6)">
+      <span class="step-n">6</span>특허 점수
+    </button>
+    <button class="step-btn" id="nav-7" onclick="goStep(7)">
+      <span class="step-n">7</span>최종 명세서
+    </button>
+  </div>
+
+  <!-- ═══════════════════════════════ STEP 1 ═══════════════════════════════ -->
+  <div class="step-panel active" id="step-1">
+    <div class="grid-2" style="gap:2rem">
+      <div>
+        <div class="card" style="margin-bottom:1.5rem">
+          <h2 class="section-title" style="font-size:1.2rem">STEP 1 · 기술 핵심 추출</h2>
+          <p class="section-sub" style="margin-bottom:1rem">AI가 입력된 아이디어에서 발명의 핵심을 자동 분석합니다.</p>
+
+          <div class="form-group">
+            <label class="form-label">발명 내용 확인 및 보완</label>
+            <textarea id="s1Idea" class="form-textarea" style="min-height:180px"
+              placeholder="아이디어를 입력하거나 index에서 불러온 내용을 확인하세요."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">기술 유형 선택</label>
+            <select id="s1TechType" class="form-select">
+              <option value="자동분류">AI 자동 분류</option>
+              <option value="알고리즘형">알고리즘 / 소프트웨어</option>
+              <option value="시스템형">시스템 / 플랫폼</option>
+              <option value="장치형">장치 / 하드웨어</option>
+              <option value="공정형">공정 / 제조방법</option>
+              <option value="융합형">AI/SW 융합형</option>
+            </select>
+          </div>
+
+          <button class="btn btn-primary btn-full" onclick="runStep1()">
+            🧠 핵심 추출 실행
+          </button>
+        </div>
+
+        <div class="card">
+          <label class="form-label" style="margin-bottom:0.75rem">추가 질문 답변 (선택)</label>
+          <div class="form-group">
+            <label class="form-label" style="font-size:0.75rem">기존 기술과 가장 다른 점</label>
+            <input type="text" id="s1Diff" class="form-input" placeholder="예: 실시간 처리 속도가 10배 빠름">
+          </div>
+          <div class="form-group">
+            <label class="form-label" style="font-size:0.75rem">상업적으로 가장 중요한 요소</label>
+            <input type="text" id="s1Commerce" class="form-input" placeholder="예: 구독 SaaS 모델, API 라이선싱">
+          </div>
+          <div class="form-group" style="margin-bottom:0">
+            <label class="form-label" style="font-size:0.75rem">구현 예시 (있다면)</label>
+            <input type="text" id="s1Example" class="form-input" placeholder="예: GitHub 링크, 프로토타입 URL">
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+            <h3 style="font-weight:700">AI 분석 결과</h3>
+            <div id="s1Loading" style="display:none"><div class="spinner"></div></div>
+          </div>
+          <div id="s1Result" class="result-box" style="min-height:400px">
+            <span style="color:var(--text-secondary)">실행 버튼을 클릭하면 AI가 핵심을 분석합니다.</span>
+          </div>
+        </div>
+        <div style="text-align:right;margin-top:1rem">
+          <button class="btn btn-primary" onclick="goStep(2)" id="s1Next" disabled>
+            다음: 선행기술 분석 →
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════ STEP 2 ═══════════════════════════════ -->
+  <div class="step-panel" id="step-2">
+    <div class="grid-2" style="gap:2rem">
+      <div>
+        <div class="card">
+          <h2 class="section-title" style="font-size:1.2rem">STEP 2 · 선행기술 대비 차별성 분석</h2>
+          <p class="section-sub" style="margin-bottom:1rem">기존 기술과의 차별점과 신규성 위험을 AI가 분석합니다.</p>
+
+          <div class="form-group">
+            <label class="form-label">선행기술 검색 범위</label>
+            <select id="s2Scope" class="form-select">
+              <option value="국내외">국내외 전체 (권장)</option>
+              <option value="국내">국내 (KIPRIS)</option>
+              <option value="미국">미국 (USPTO)</option>
+              <option value="유럽">유럽 (EPO)</option>
+              <option value="PCT">PCT 국제출원</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">추가 키워드 (선택)</label>
+            <input type="text" id="s2Keywords" class="form-input"
+              placeholder="검색에 포함할 핵심 키워드 (쉼표 구분)">
+          </div>
+
+          <button class="btn btn-primary btn-full" onclick="runStep2()">
+            🔍 선행기술 분석 실행
+          </button>
+        </div>
+
+        <div class="card" style="margin-top:1.5rem">
+          <h3 style="font-weight:700;margin-bottom:1rem">신규성 위험 평가</h3>
+          <div id="s2Risk">
+            <div style="color:var(--text-secondary);font-size:0.875rem">분석 후 자동 생성됩니다.</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+            <h3 style="font-weight:700">선행기술 분석 결과</h3>
+            <div id="s2Loading" style="display:none"><div class="spinner"></div></div>
+          </div>
+          <div id="s2Result" class="result-box" style="min-height:420px">
+            <span style="color:var(--text-secondary)">분석 실행 후 결과가 표시됩니다.</span>
+          </div>
+        </div>
+        <div style="text-align:right;margin-top:1rem">
+          <button class="btn btn-primary" onclick="goStep(3)" id="s2Next" disabled>
+            다음: 구성요소 분해 →
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════ STEP 3 ═══════════════════════════════ -->
+  <div class="step-panel" id="step-3">
+    <div class="grid-2" style="gap:2rem">
+      <div>
+        <div class="card">
+          <h2 class="section-title" style="font-size:1.2rem">STEP 3 · 발명 구성요소 분해</h2>
+          <p class="section-sub" style="margin-bottom:1rem">발명을 구성하는 핵심 요소와 작동 흐름을 체계화합니다.</p>
+
+          <div class="form-group">
+            <label class="form-label">필수 보호 구성요소 (직접 입력 가능)</label>
+            <textarea id="s3Core" class="form-textarea"
+              placeholder="반드시 청구항에 포함해야 할 핵심 구성요소를 입력하세요.&#10;예: AI 추론 엔진, 실시간 처리 모듈, 사용자 인터페이스"></textarea>
+          </div>
+
+          <button class="btn btn-primary btn-full" onclick="runStep3()">
+            🔧 구성요소 분해 실행
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+            <h3 style="font-weight:700">구성 분해 결과</h3>
+            <div id="s3Loading" style="display:none"><div class="spinner"></div></div>
+          </div>
+          <div id="s3Result" class="result-box" style="min-height:380px">
+            <span style="color:var(--text-secondary)">분석 실행 후 결과가 표시됩니다.</span>
+          </div>
+        </div>
+        <div style="text-align:right;margin-top:1rem">
+          <button class="btn btn-primary" onclick="goStep(4)" id="s3Next" disabled>
+            다음: 청구항 설계 →
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════ STEP 4 ═══════════════════════════════ -->
+  <div class="step-panel" id="step-4">
+    <div class="card" style="margin-bottom:1.5rem">
+      <h2 class="section-title" style="font-size:1.2rem">STEP 4 · 청구항 설계</h2>
+      <p class="section-sub" style="margin-bottom:1rem">독립항 · 종속항 · 회피설계 방어항을 AI가 자동 설계합니다.</p>
+
+      <div class="grid-2" style="gap:1rem;margin-bottom:1.5rem">
+        <div>
+          <label class="form-label">독립항 수</label>
+          <select id="s4IndepCount" class="form-select">
+            <option value="1">1개 (최소)</option>
+            <option value="2">2개 (방법+시스템)</option>
+            <option value="3" selected>3개 (방법+시스템+장치)</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label">종속항 수</label>
+          <select id="s4DepCount" class="form-select">
+            <option value="10">10개</option>
+            <option value="15" selected>15개 (권장)</option>
+            <option value="20">20개 (최대 보호)</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" onclick="runStep4()" style="margin-right:0.75rem">
+        ✍️ 청구항 자동 생성
+      </button>
+      <div id="s4Loading" style="display:none;display:inline-block"><div class="spinner"></div></div>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+        <h3 style="font-weight:700">생성된 청구항</h3>
+        <button class="btn btn-outline" style="font-size:0.8rem;padding:0.4rem 0.75rem" onclick="addClaim()">+ 항 추가</button>
+      </div>
+      <div id="s4Claims" class="claim-list">
+        <div style="color:var(--text-secondary);font-size:0.875rem">청구항 생성 버튼을 클릭하세요.</div>
+      </div>
+    </div>
+
+    <div style="text-align:right;margin-top:1.5rem">
+      <button class="btn btn-primary" onclick="goStep(5)" id="s4Next" disabled>
+        다음: 실시예 생성 →
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════ STEP 5 ═══════════════════════════════ -->
+  <div class="step-panel" id="step-5">
+    <div class="grid-2" style="gap:2rem">
+      <div>
+        <div class="card">
+          <h2 class="section-title" style="font-size:1.2rem">STEP 5 · 실시예 자동 생성</h2>
+          <p class="section-sub" style="margin-bottom:1rem">구체적 구현 사례와 변형 실시예를 생성하여 권리 범위를 확장합니다.</p>
+
+          <div class="form-group">
+            <label class="form-label">실시예 유형</label>
+            <select id="s5Type" class="form-select">
+              <option value="standard">표준 실시예 (구체적 구현)</option>
+              <option value="variation">변형 실시예 포함</option>
+              <option value="industry">산업별 적용 사례</option>
+            </select>
+          </div>
+
+          <button class="btn btn-primary btn-full" onclick="runStep5()">
+            📋 실시예 생성 실행
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+            <h3 style="font-weight:700">실시예 결과</h3>
+            <div id="s5Loading" style="display:none"><div class="spinner"></div></div>
+          </div>
+          <div id="s5Result" class="result-box" style="min-height:360px">
+            <span style="color:var(--text-secondary)">실시예 생성 버튼을 클릭하세요.</span>
+          </div>
+        </div>
+        <div style="text-align:right;margin-top:1rem">
+          <button class="btn btn-primary" onclick="goStep(6)" id="s5Next" disabled>
+            다음: 특허 점수 평가 →
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════ STEP 6 ═══════════════════════════════ -->
+  <div class="step-panel" id="step-6">
+    <div class="card" style="margin-bottom:1.5rem">
+      <h2 class="section-title" style="font-size:1.2rem">STEP 6 · 특허 점수화 (PSM) & 권리 강도 (RSI)</h2>
+      <p class="section-sub" style="margin-bottom:1.5rem">각 항목을 평가하여 특허 강도와 전략적 권리 지수를 산출합니다.</p>
+
+      <div class="score-grid">
+        <div class="score-card">
+          <div class="score-value" id="sc_novelty" style="color:#60a5fa">3</div>
+          <input type="range" class="score-slider" id="sl_novelty" min="1" max="5" value="3" oninput="updateScore('novelty')">
+          <div class="score-name">신규성 (×25%)</div>
+        </div>
+        <div class="score-card">
+          <div class="score-value" id="sc_inventive" style="color:#a78bfa">3</div>
+          <input type="range" class="score-slider" id="sl_inventive" min="1" max="5" value="3" oninput="updateScore('inventive')">
+          <div class="score-name">진보성 (×20%)</div>
+        </div>
+        <div class="score-card">
+          <div class="score-value" id="sc_industrial" style="color:#34d399">3</div>
+          <input type="range" class="score-slider" id="sl_industrial" min="1" max="5" value="3" oninput="updateScore('industrial')">
+          <div class="score-name">산업성 (×10%)</div>
+        </div>
+        <div class="score-card">
+          <div class="score-value" id="sc_effect" style="color:#fbbf24">3</div>
+          <input type="range" class="score-slider" id="sl_effect" min="1" max="5" value="3" oninput="updateScore('effect')">
+          <div class="score-name">기술효과 (×10%)</div>
+        </div>
+        <div class="score-card">
+          <div class="score-value" id="sc_claims" style="color:#f87171">3</div>
+          <input type="range" class="score-slider" id="sl_claims" min="1" max="5" value="3" oninput="updateScore('claims')">
+          <div class="score-name">청구항 완성도 (×15%)</div>
+        </div>
+        <div class="score-card">
+          <div class="score-value" id="sc_defense" style="color:#fb923c">3</div>
+          <input type="range" class="score-slider" id="sl_defense" min="1" max="5" value="3" oninput="updateScore('defense')">
+          <div class="score-name">방어력 (×10%)</div>
+        </div>
+        <div class="score-card">
+          <div class="score-value" id="sc_expansion" style="color:#38bdf8">3</div>
+          <input type="range" class="score-slider" id="sl_expansion" min="1" max="5" value="3" oninput="updateScore('expansion')">
+          <div class="score-name">확장성 (×10%)</div>
+        </div>
+        <div class="score-card" style="background:var(--bg-card2)">
+          <div class="score-value" id="psm_total" style="color:#ffffff;font-size:2.5rem">60</div>
+          <div class="score-name" style="font-weight:700">PSM 총점</div>
+          <div id="psm_grade" class="badge badge-yellow" style="margin-top:0.5rem">양호</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RSI -->
+    <div class="grid-2" style="gap:1.5rem;margin-bottom:1.5rem">
+      <div class="card">
+        <h3 style="font-weight:700;margin-bottom:1.25rem">RSI 권리 강도 지수</h3>
+        <div class="form-group">
+          <label class="form-label" style="font-size:0.75rem">법적 안정성 (L) <span id="rsi_l_val">5</span>/10</label>
+          <input type="range" class="score-slider" id="rsi_l" min="1" max="10" value="5" oninput="updateRSI()">
+        </div>
+        <div class="form-group">
+          <label class="form-label" style="font-size:0.75rem">기술 복잡도 (T) <span id="rsi_t_val">5</span>/10</label>
+          <input type="range" class="score-slider" id="rsi_t" min="1" max="10" value="5" oninput="updateRSI()">
+        </div>
+        <div class="form-group">
+          <label class="form-label" style="font-size:0.75rem">시장 독점성 (M) <span id="rsi_m_val">5</span>/10</label>
+          <input type="range" class="score-slider" id="rsi_m" min="1" max="10" value="5" oninput="updateRSI()">
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label" style="font-size:0.75rem">우회 가능성 (V) <span id="rsi_v_val">5</span>/10</label>
+          <input type="range" class="score-slider" id="rsi_v" min="1" max="10" value="5" oninput="updateRSI()">
+        </div>
+      </div>
+
+      <div class="card" style="text-align:center">
+        <h3 style="font-weight:700;margin-bottom:1.5rem">RSI 지수 결과</h3>
+        <div style="font-size:4rem;font-weight:900;color:#60a5fa;line-height:1" id="rsi_value">25</div>
+        <div id="rsi_grade" class="badge badge-yellow" style="margin:0.75rem auto;display:inline-block;font-size:1rem;padding:0.5rem 1.5rem">보통</div>
+        <div class="rsi-gauge">
+          <div class="rsi-needle" id="rsi_needle" style="left:30%"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:0.7rem;color:var(--text-secondary)">
+          <span>약함</span><span>보통</span><span>강함</span><span>핵심</span>
+        </div>
+        <div style="margin-top:1.5rem">
+          <div style="font-size:0.8rem;color:var(--text-secondary)">RSI = (L × T × M) / V</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rejection Probability -->
+    <div class="card">
+      <h3 style="font-weight:700;margin-bottom:1rem">거절 확률 예측 (ML 시뮬레이션)</h3>
+      <div class="grid-2" style="gap:1rem">
+        <div>
+          <div class="form-group">
+            <label class="form-label" style="font-size:0.75rem">선행기술 유사도 추정 (%)</label>
+            <input type="range" class="score-slider" id="rej_sim" min="0" max="100" value="30" oninput="updateRejection()">
+            <div style="font-size:0.8rem;color:var(--text-secondary);margin-top:0.25rem">유사도: <span id="rej_sim_val">30</span>%</div>
+          </div>
+          <div class="form-group" style="margin-bottom:0">
+            <label class="form-label" style="font-size:0.75rem">청구항 수</label>
+            <input type="range" class="score-slider" id="rej_claims" min="1" max="30" value="15" oninput="updateRejection()">
+            <div style="font-size:0.8rem;color:var(--text-secondary);margin-top:0.25rem">청구항: <span id="rej_claims_val">15</span>개</div>
+          </div>
+        </div>
+        <div style="text-align:center;padding:1rem">
+          <div style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:0.5rem">거절 예측 확률</div>
+          <div style="font-size:3.5rem;font-weight:900;line-height:1" id="rej_pct_display">27%</div>
+          <div id="rej_grade" class="badge badge-green" style="margin:0.75rem auto;display:inline-block">저위험</div>
+          <div style="font-size:0.8rem;color:var(--text-secondary);margin-top:0.75rem" id="rej_advice">
+            현재 청구항 구조 양호. 종속항 추가 권장.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align:right;margin-top:1.5rem">
+      <button class="btn btn-primary" onclick="goStep(7)">
+        다음: 최종 명세서 생성 →
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════ STEP 7 ═══════════════════════════════ -->
+  <div class="step-panel" id="step-7">
+    <div class="card" style="margin-bottom:1.5rem">
+      <h2 class="section-title" style="font-size:1.2rem">STEP 7 · 최종 특허 명세서 자동 생성</h2>
+      <p class="section-sub" style="margin-bottom:1rem">특허청 제출용 완성 명세서를 AI가 자동 작성합니다.</p>
+
+      <div style="display:flex;gap:1rem;flex-wrap:wrap">
+        <button class="btn btn-primary btn-lg" onclick="runStep7()">
+          📄 명세서 전체 생성
+        </button>
+        <div id="s7Loading" style="display:none;align-items:center;gap:0.5rem">
+          <div class="spinner"></div>
+          <span style="color:var(--text-secondary);font-size:0.875rem">명세서 작성 중...</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" id="s7SpecWrap">
+      <!-- Score Summary Bar -->
+      <div id="s7ScoreSummary" style="display:none;background:var(--bg-dark);border-radius:10px;padding:1.25rem;margin-bottom:1.5rem">
+        <div style="display:flex;gap:2rem;flex-wrap:wrap;justify-content:center">
+          <div style="text-align:center">
+            <div style="font-size:0.75rem;color:var(--text-secondary)">PSM 점수</div>
+            <div style="font-size:2rem;font-weight:800;color:#60a5fa" id="s7_psm">-</div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-size:0.75rem;color:var(--text-secondary)">RSI 지수</div>
+            <div style="font-size:2rem;font-weight:800;color:#34d399" id="s7_rsi">-</div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-size:0.75rem;color:var(--text-secondary)">거절 확률</div>
+            <div style="font-size:2rem;font-weight:800;color:#fbbf24" id="s7_rej">-</div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-size:0.75rem;color:var(--text-secondary)">전략 등급</div>
+            <div style="font-size:1.5rem;font-weight:800" id="s7_grade">-</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="s7Spec" class="final-spec">
+        <div style="color:var(--text-secondary);text-align:center;padding:3rem">
+          명세서 생성 버튼을 클릭하면 전체 명세서가 자동 작성됩니다.
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:1rem;margin-top:1.5rem;flex-wrap:wrap">
+      <button class="btn btn-success btn-lg" onclick="printSpec()">
+        🖨️ PDF 출력
+      </button>
+      <button class="btn btn-secondary btn-lg" onclick="copySpec()">
+        📋 전체 복사
+      </button>
+      <a href="dashboard.html" class="btn btn-outline btn-lg">
+        📊 포트폴리오에 추가
+      </a>
+      <a href="index.html" class="btn btn-outline btn-lg">
+        🔄 새 프로젝트
+      </a>
+    </div>
+  </div>
+
+</div><!-- /page-content -->
+
+<script src="assets/js/common.js"></script>
+<script src="assets/js/layout.js"></script>
+<script>
+// ─────────────────────────────────────
+// State
+// ─────────────────────────────────────
+let currentStep = 1;
+const maxSteps = 7;
+const stepResults = {};
+let proj = {};
+
+// Load project
+window.addEventListener('DOMContentLoaded', () => {
+  proj = getProject() || {};
+  const bar = document.getElementById('projectInfoBar');
+  if (proj.title) {
+    bar.innerHTML = `<strong>${proj.title}</strong> · ${proj.industry || '분야 미지정'} · ${proj.idea ? proj.idea.substring(0,80)+'...' : ''}`;
+    document.getElementById('s1Idea').value = proj.idea || '';
+  } else {
+    bar.innerHTML = `<span style="color:rgba(255,200,100,0.9)">⚠ 홈에서 프로젝트 정보를 입력해주세요.</span>`;
+  }
+  initScores();
+  updateRSI();
+  updateRejection();
+});
+
+// ─────────────────────────────────────
+// Step Navigation
+// ─────────────────────────────────────
+function goStep(n) {
+  document.getElementById(`step-${currentStep}`).classList.remove('active');
+  document.getElementById(`nav-${currentStep}`).classList.remove('active');
+  currentStep = n;
+  document.getElementById(`step-${n}`).classList.add('active');
+  document.getElementById(`nav-${n}`).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function markDone(n) {
+  const btn = document.getElementById(`nav-${n}`);
+  if (btn) { btn.classList.remove('active'); btn.classList.add('done'); }
+}
+
+// ─────────────────────────────────────
+// STEP 1 - Core Extraction
+// ─────────────────────────────────────
+async function runStep1() {
+  const idea = document.getElementById('s1Idea').value.trim();
+  if (!idea) { showToast('아이디어를 입력하세요.', 'warning'); return; }
+
+  const diff = document.getElementById('s1Diff').value;
+  const commerce = document.getElementById('s1Commerce').value;
+  const techType = document.getElementById('s1TechType').value;
+
+  const prompt = `당신은 특허 전문가 AI입니다. 아래 발명 내용을 분석하여 특허 출원을 위한 핵심 요소를 추출해주세요.
+
+[발명 내용]
+${idea}
+${diff ? `[기존 기술과의 차이점] ${diff}` : ''}
+${commerce ? `[상업적 핵심 요소] ${commerce}` : ''}
+[기술 유형] ${techType}
+[산업 분야] ${proj.industry || ''}
+
+다음 구조로 분석해주세요:
+
+## 1. 발명의 핵심 개념 (3줄 요약)
+발명이 해결하는 문제와 해결 방법을 명확하게 3줄로 요약.
+
+## 2. 기술적 과제 정의
+기존 기술의 문제점과 본 발명이 해결하고자 하는 과제.
+
+## 3. 해결 수단
+발명의 핵심 기술적 해결 방법과 작동 원리.
+
+## 4. 기술 유형 분류
+발명의 기술 유형 (알고리즘형/시스템형/장치형/공정형/융합형) 및 분류 이유.
+
+## 5. 주요 기술 키워드 (10개)
+특허 검색 및 청구항 작성에 활용할 핵심 키워드 목록.
+
+## 6. 기대 효과
+본 발명으로 얻을 수 있는 기술적·경제적 효과.
+
+## 7. 추가 보강 제안
+특허 강도를 높이기 위해 보완해야 할 사항.
+
+한국어로 작성하고, 실제 특허 명세서 수준의 전문성으로 작성해주세요.`;
+
+  const loading = document.getElementById('s1Loading');
+  const result = document.getElementById('s1Result');
+  loading.style.display = 'block';
+  result.innerHTML = '';
+
+  try {
+    let fullText = '';
+    await callGemini(prompt, (chunk, full) => {
+      fullText = full;
+      result.innerHTML = formatMarkdown(full);
+    });
+    stepResults.step1 = fullText;
+    saveProject({ step1: fullText });
+    document.getElementById('s1Next').disabled = false;
+    markDone(1);
+    showToast('핵심 추출 완료!', 'success');
+  } catch (e) {
+    result.innerHTML = `<span style="color:#f87171">오류: ${e.message}</span>`;
+    showToast(e.message, 'error');
+  } finally {
+    loading.style.display = 'none';
+  }
+}
+
+// ─────────────────────────────────────
+// STEP 2 - Prior Art Analysis
+// ─────────────────────────────────────
+async function runStep2() {
+  const scope = document.getElementById('s2Scope').value;
+  const keywords = document.getElementById('s2Keywords').value;
+  const step1 = stepResults.step1 || proj.idea || '';
+
+  const prompt = `당신은 특허 검색 및 선행기술 분석 전문가 AI입니다.
+
+[발명 개요]
+${step1.substring(0, 800)}
+${keywords ? `[추가 키워드] ${keywords}` : ''}
+[검색 범위] ${scope}
+
+다음 구조로 선행기술 분석 보고서를 작성해주세요:
+
+## 1. 검색 전략
+사용된 검색 쿼리와 키워드 조합을 설명.
+
+## 2. 유사 선행기술 분석 (가상 사례 3건)
+각 선행기술에 대해:
+- 출처 및 특허 유형
+- 기술 내용 요약
+- 본 발명과의 유사점
+- 본 발명과의 차별점
+- 유사도 추정 (%)
+
+## 3. 신규성 위험 평가
+| 위험 요소 | 위험 수준 | 대응 방안 |
+형식으로 표 작성.
+
+## 4. 차별성 매트릭스
+| 기존기술 문제점 | 본 발명 해결방법 | 기대효과 |
+형식의 비교 표 작성.
+
+## 5. 신규성·진보성 판단
+본 발명의 신규성과 진보성에 대한 전문적 의견.
+
+## 6. 보완 권고사항
+특허 등록 가능성을 높이기 위한 구체적 보완 제안.
+
+한국어로 작성하고, 가능한 구체적이고 실무적으로 작성해주세요.`;
+
+  const loading = document.getElementById('s2Loading');
+  const result = document.getElementById('s2Result');
+  loading.style.display = 'block';
+  result.innerHTML = '';
+
+  try {
+    let fullText = '';
+    await callGemini(prompt, (chunk, full) => {
+      fullText = full;
+      result.innerHTML = formatMarkdown(full);
+    });
+    stepResults.step2 = fullText;
+    saveProject({ step2: fullText });
+
+    // Update risk display
+    document.getElementById('s2Risk').innerHTML = `
+      <div class="risk-meter" style="background:rgba(5,150,105,0.1);border-color:rgba(5,150,105,0.3)">
+        <div class="risk-pct" style="color:#34d399">30%</div>
+        <div>
+          <div style="font-weight:700;color:#34d399">저위험 · 신규성 높음</div>
+          <div style="font-size:0.8rem;color:var(--text-secondary)">분석 결과 선행기술과의 차별성이 충분합니다.</div>
+        </div>
+      </div>`;
+    document.getElementById('s2Next').disabled = false;
+    markDone(2);
+    showToast('선행기술 분석 완료!', 'success');
+  } catch (e) {
+    result.innerHTML = `<span style="color:#f87171">오류: ${e.message}</span>`;
+    showToast(e.message, 'error');
+  } finally {
+    loading.style.display = 'none';
+  }
+}
+
+// ─────────────────────────────────────
+// STEP 3 - Component Decomposition
+// ─────────────────────────────────────
+async function runStep3() {
+  const coreInput = document.getElementById('s3Core').value;
+  const step1 = stepResults.step1 || proj.idea || '';
+
+  const prompt = `특허 전문가로서 아래 발명의 구성요소를 체계적으로 분해해주세요.
+
+[발명 분석 내용]
+${step1.substring(0, 600)}
+${coreInput ? `[필수 보호 구성요소] ${coreInput}` : ''}
+
+다음 구조로 작성해주세요:
+
+## 1. 핵심 구성요소 (A, B, C... 구분)
+각 구성요소에 대해:
+- 명칭
+- 기능 및 역할
+- 기술적 특성
+- 보호 중요도 (상/중/하)
+
+## 2. 구성요소 간 연결 관계
+데이터 흐름 또는 작동 순서를 단계별로 설명.
+
+## 3. 시스템 아키텍처
+전체 구조를 텍스트 다이어그램으로 표현.
+
+## 4. 청구항 작성을 위한 구성요소 계층화
+- 필수 독립항 구성요소
+- 선택적 종속항 구성요소
+- 확장 가능한 변형 구성요소
+
+## 5. 삭제 가능한 보조 요소
+권리 범위에 영향 없이 삭제 가능한 요소 목록.
+
+한국어로 실무 특허 수준으로 작성해주세요.`;
+
+  const loading = document.getElementById('s3Loading');
+  const result = document.getElementById('s3Result');
+  loading.style.display = 'block';
+  result.innerHTML = '';
+
+  try {
+    let fullText = '';
+    await callGemini(prompt, (chunk, full) => {
+      fullText = full;
+      result.innerHTML = formatMarkdown(full);
+    });
+    stepResults.step3 = fullText;
+    saveProject({ step3: fullText });
+    document.getElementById('s3Next').disabled = false;
+    markDone(3);
+    showToast('구성요소 분해 완료!', 'success');
+  } catch (e) {
+    result.innerHTML = `<span style="color:#f87171">오류: ${e.message}</span>`;
+    showToast(e.message, 'error');
+  } finally {
+    loading.style.display = 'none';
+  }
+}
+
+// ─────────────────────────────────────
+// STEP 4 - Claims Design
+// ─────────────────────────────────────
+async function runStep4() {
+  const indepCount = parseInt(document.getElementById('s4IndepCount').value);
+  const depCount = parseInt(document.getElementById('s4DepCount').value);
+  const step1 = stepResults.step1 || proj.idea || '';
+  const step3 = stepResults.step3 || '';
+
+  const prompt = `특허 청구항 전문 AI입니다. 아래 발명을 기반으로 특허청 등록 수준의 청구항을 작성해주세요.
+
+[발명 내용]
+${step1.substring(0, 500)}
+[구성요소]
+${step3.substring(0, 400)}
+
+요구사항:
+- 독립항: ${indepCount}개 (방법/시스템/장치 청구항 포함)
+- 종속항: ${depCount}개
+- 회피설계 방어항: 3개 추가
+
+각 청구항을 다음 형식으로 작성:
+
+[청구항 1 - 독립항]
+[방법 청구항]
+...을 포함하는 방법에 있어서, ...하는 단계; ...하는 단계; 를 포함하는 것을 특징으로 하는 ...방법.
+
+[청구항 2 - 독립항]
+[시스템 청구항]
+...
+
+[청구항 3 이후 - 종속항]
+제1항에 있어서, ...를 더 포함하는 것을 특징으로 하는 ...
+
+[회피설계 방어항]
+...
+
+한국 특허법 제42조 형식에 맞게 작성하고, 최대한 넓은 권리 범위를 확보해주세요.`;
+
+  const loading = document.getElementById('s4Loading');
+  loading.style.display = 'inline-flex';
+  loading.style.alignItems = 'center';
+
+  try {
+    const result = await callGemini(prompt);
+    stepResults.step4 = result;
+    saveProject({ step4: result });
+
+    // Parse and render claims
+    renderClaims(result);
+    document.getElementById('s4Next').disabled = false;
+    markDone(4);
+    showToast('청구항 생성 완료!', 'success');
+  } catch (e) {
+    showToast(e.message, 'error');
+  } finally {
+    loading.style.display = 'none';
+  }
+}
+
+function renderClaims(text) {
+  const container = document.getElementById('s4Claims');
+  // Simple parsing - split by claim markers
+  const claimLines = text.split('\n').filter(l => l.trim());
+  let html = '';
+  let inClaim = false;
+  let claimNum = 0;
+  let currentClaim = '';
+  let claimType = 'independent';
+
+  claimLines.forEach(line => {
+    const isClaimStart = line.match(/\[청구항\s*(\d+)/);
+    if (isClaimStart) {
+      if (currentClaim) {
+        html += renderClaimItem(claimNum, claimType, currentClaim);
+      }
+      claimNum++;
+      currentClaim = '';
+      claimType = line.toLowerCase().includes('독립') ? 'independent' :
+                  line.toLowerCase().includes('방어') ? 'defense' : 'dependent';
+    } else if (claimNum > 0) {
+      currentClaim += line + '\n';
+    }
+  });
+  if (currentClaim) html += renderClaimItem(claimNum, claimType, currentClaim);
+
+  // Fallback: show raw text in nice box
+  if (!html) {
+    html = `<div class="claim-item">
+      <div class="claim-header">
+        <span class="claim-tag independent">생성된 청구항</span>
+      </div>
+      <div style="font-size:0.875rem;line-height:1.8;white-space:pre-wrap">${text}</div>
+    </div>`;
+  }
+
+  container.innerHTML = html;
+}
+
+function renderClaimItem(num, type, text) {
+  const tagClass = type === 'independent' ? 'independent' : type === 'defense' ? 'defense' : 'dependent';
+  const tagLabel = type === 'independent' ? '독립항' : type === 'defense' ? '방어항' : '종속항';
+  return `<div class="claim-item">
+    <div class="claim-header">
+      <span class="claim-num">제${num}항</span>
+      <span class="claim-tag ${tagClass}">${tagLabel}</span>
+    </div>
+    <div class="claim-text-area" style="min-height:40px;white-space:pre-wrap">${text.trim()}</div>
+  </div>`;
+}
+
+function addClaim() {
+  const container = document.getElementById('s4Claims');
+  const newItem = document.createElement('div');
+  newItem.className = 'claim-item';
+  newItem.innerHTML = `
+    <div class="claim-header">
+      <span class="claim-num">새 청구항</span>
+      <span class="claim-tag dependent">종속항</span>
+    </div>
+    <textarea class="claim-text-area" style="min-height:80px;border:none;outline:none"
+      placeholder="청구항 내용을 입력하세요..."></textarea>
+  `;
+  container.appendChild(newItem);
+}
+
+// ─────────────────────────────────────
+// STEP 5 - Examples
+// ─────────────────────────────────────
+async function runStep5() {
+  const type = document.getElementById('s5Type').value;
+  const step1 = stepResults.step1 || proj.idea || '';
+
+  const prompt = `특허 명세서 작성 전문가입니다. 아래 발명의 실시예를 작성해주세요.
+
+[발명 내용]
+${step1.substring(0, 600)}
+[실시예 유형] ${type}
+
+다음 구조로 작성해주세요:
+
+## 1. 제1 실시예 (기본 구현)
+발명의 핵심 구성을 포함한 기본적인 구현 예시. 구체적인 수치, 조건, 환경 포함.
+
+## 2. 제2 실시예 (변형 구현)
+핵심 구성은 유지하되 다른 방식으로 구현한 변형 예시.
+
+## 3. 제3 실시예 (확장 구현)
+부가적인 기능이나 구성을 추가한 확장 예시.
+
+## 4. 산업별 적용 사례
+본 발명이 적용될 수 있는 3개 이상의 산업 분야와 구체적 활용 방법.
+
+## 5. 비교 실험 결과 (예시)
+기존 기술 대비 본 발명의 효과를 수치로 표현한 예시 데이터.
+
+실제 특허 명세서의 실시예 형식으로 작성해주세요.`;
+
+  const loading = document.getElementById('s5Loading');
+  const result = document.getElementById('s5Result');
+  loading.style.display = 'block';
+  result.innerHTML = '';
+
+  try {
+    let fullText = '';
+    await callGemini(prompt, (chunk, full) => {
+      fullText = full;
+      result.innerHTML = formatMarkdown(full);
+    });
+    stepResults.step5 = fullText;
+    saveProject({ step5: fullText });
+    document.getElementById('s5Next').disabled = false;
+    markDone(5);
+    showToast('실시예 생성 완료!', 'success');
+  } catch (e) {
+    result.innerHTML = `<span style="color:#f87171">오류: ${e.message}</span>`;
+    showToast(e.message, 'error');
+  } finally {
+    loading.style.display = 'none';
+  }
+}
+
+// ─────────────────────────────────────
+// STEP 6 - Scoring
+// ─────────────────────────────────────
+const scoreKeys = ['novelty','inventive','industrial','effect','claims','defense','expansion'];
+const scoreWeights = { novelty:0.25, inventive:0.20, industrial:0.10, effect:0.10, claims:0.15, defense:0.10, expansion:0.10 };
+
+function initScores() {
+  scoreKeys.forEach(k => updateScore(k));
+  updateRSI();
+}
+
+function updateScore(key) {
+  const val = parseInt(document.getElementById(`sl_${key}`).value);
+  const colors = { novelty:'#60a5fa', inventive:'#a78bfa', industrial:'#34d399', effect:'#fbbf24', claims:'#f87171', defense:'#fb923c', expansion:'#38bdf8' };
+  document.getElementById(`sc_${key}`).textContent = val;
+  document.getElementById(`sc_${key}`).style.color = colors[key];
+  recalcPSM();
+}
+
+function recalcPSM() {
+  const scores = {};
+  scoreKeys.forEach(k => { scores[k] = parseInt(document.getElementById(`sl_${k}`).value); });
+  const psm = calcPSM(scores);
+  document.getElementById('psm_total').textContent = psm;
+  const g = getPSMGrade(psm);
+  const gradeEl = document.getElementById('psm_grade');
+  gradeEl.textContent = g.grade;
+  gradeEl.style.background = g.color + '33';
+  gradeEl.style.color = g.color;
+  return psm;
+}
+
+function updateRSI() {
+  const l = parseInt(document.getElementById('rsi_l').value);
+  const t = parseInt(document.getElementById('rsi_t').value);
+  const m = parseInt(document.getElementById('rsi_m').value);
+  const v = parseInt(document.getElementById('rsi_v').value);
+  document.getElementById('rsi_l_val').textContent = l;
+  document.getElementById('rsi_t_val').textContent = t;
+  document.getElementById('rsi_m_val').textContent = m;
+  document.getElementById('rsi_v_val').textContent = v;
+  const rsi = calcRSI(l, t, m, v);
+  document.getElementById('rsi_value').textContent = rsi;
+  const g = getRSIGrade(rsi);
+  const gradeEl = document.getElementById('rsi_grade');
+  gradeEl.textContent = g.grade;
+  document.getElementById('rsi_needle').style.left = g.pct + '%';
+}
+
+function updateRejection() {
+  const sim = parseInt(document.getElementById('rej_sim').value);
+  const claims = parseInt(document.getElementById('rej_claims').value);
+  document.getElementById('rej_sim_val').textContent = sim;
+  document.getElementById('rej_claims_val').textContent = claims;
+  const psm = recalcPSM();
+  const prob = calcRejectionProb(sim / 100, psm, claims);
+  const pct = Math.round(prob * 100);
+  document.getElementById('rej_pct_display').textContent = pct + '%';
+  const gradeEl = document.getElementById('rej_grade');
+  if (pct >= 60) {
+    gradeEl.textContent = '고위험';
+    gradeEl.className = 'badge badge-red';
+    document.getElementById('rej_advice').textContent = '⚠ 청구항 전면 재설계 권고. 독립항 범위 축소 필요.';
+  } else if (pct >= 40) {
+    gradeEl.textContent = '중위험';
+    gradeEl.className = 'badge badge-yellow';
+    document.getElementById('rej_advice').textContent = '△ 종속항 추가 및 실시예 보강 권고.';
+  } else {
+    gradeEl.textContent = '저위험';
+    gradeEl.className = 'badge badge-green';
+    document.getElementById('rej_advice').textContent = '✓ 현재 구조 양호. 방어항 추가로 강화 가능.';
+  }
+  document.getElementById('rej_pct_display').style.color = pct >= 60 ? '#f87171' : pct >= 40 ? '#fbbf24' : '#34d399';
+}
+
+// ─────────────────────────────────────
+// STEP 7 - Final Specification
+// ─────────────────────────────────────
+async function runStep7() {
+  const step1 = stepResults.step1 || proj.idea || '';
+  const step2 = stepResults.step2 || '';
+  const step3 = stepResults.step3 || '';
+  const step4 = stepResults.step4 || '';
+  const step5 = stepResults.step5 || '';
+
+  const psm = recalcPSM();
+  const l = parseInt(document.getElementById('rsi_l').value);
+  const t = parseInt(document.getElementById('rsi_t').value);
+  const m = parseInt(document.getElementById('rsi_m').value);
+  const v = parseInt(document.getElementById('rsi_v').value);
+  const rsi = calcRSI(l, t, m, v);
+  const sim = parseInt(document.getElementById('rej_sim').value);
+  const claimsCount = parseInt(document.getElementById('rej_claims').value);
+  const rejProb = Math.round(calcRejectionProb(sim/100, psm, claimsCount) * 100);
+
+  const prompt = `당신은 특허청 등록 수준의 특허 명세서를 작성하는 전문 변리사 AI입니다.
+아래 분석 내용을 바탕으로 한국 특허청 제출용 완성 명세서를 작성해주세요.
+
+[발명 분석]
+${step1.substring(0, 400)}
+[선행기술 분석 요약]
+${step2.substring(0, 300)}
+[구성요소]
+${step3.substring(0, 300)}
+[청구항]
+${step4.substring(0, 400)}
+[실시예]
+${step5.substring(0, 300)}
+[발명 제목] ${proj.title || ''}
+[산업 분야] ${proj.industry || ''}
+
+다음 특허청 표준 형식으로 완성 명세서를 작성해주세요:
+
+【발명의 명칭】
+(발명의 명칭)
+
+【기술분야】
+본 발명은...
+
+【배경기술】
+종래의...문제점이 있었다.
+
+【발명의 내용】
+【해결하려는 과제】
+【과제의 해결 수단】
+【발명의 효과】
+
+【도면의 간단한 설명】
+도 1은...
+도 2는...
+
+【발명의 실시를 위한 구체적인 내용】
+이하, 첨부 도면을 참조하여...
+
+【청구범위】
+【청구항 1】
+...
+
+각 섹션을 충분히 자세하게 작성하고, 실제 특허청 제출 가능한 수준으로 작성해주세요.`;
+
+  const loading = document.getElementById('s7Loading');
+  loading.style.display = 'flex';
+
+  // Show score summary
+  document.getElementById('s7ScoreSummary').style.display = 'block';
+  document.getElementById('s7_psm').textContent = psm;
+  document.getElementById('s7_rsi').textContent = rsi;
+  document.getElementById('s7_rej').textContent = rejProb + '%';
+  const rsiGrade = getRSIGrade(rsi);
+  document.getElementById('s7_grade').textContent = rsiGrade.grade;
+  document.getElementById('s7_grade').style.color = rsiGrade.color;
+
+  try {
+    const specEl = document.getElementById('s7Spec');
+    specEl.innerHTML = '';
+    let fullText = '';
+    await callGemini(prompt, (chunk, full) => {
+      fullText = full;
+      specEl.innerHTML = formatMarkdown(full);
+    });
+    stepResults.step7 = fullText;
+    saveProject({ step7: fullText, psm, rsi, rejProb });
+    markDone(7);
+    showToast('명세서 생성 완료!', 'success');
+  } catch (e) {
+    document.getElementById('s7Spec').innerHTML = `<span style="color:#f87171">오류: ${e.message}</span>`;
+    showToast(e.message, 'error');
+  } finally {
+    loading.style.display = 'none';
+  }
+}
+
+function printSpec() {
+  const content = stepResults.step7 || '명세서를 먼저 생성해주세요.';
+  generatePDF(`특허 명세서 - ${proj.title || ''}`, content);
+}
+
+function copySpec() {
+  const content = stepResults.step7 || '';
+  navigator.clipboard.writeText(content).then(() => showToast('클립보드에 복사되었습니다.', 'success'));
+}
+</script>
+</body>
+</html>

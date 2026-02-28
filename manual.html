@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>사용 매뉴얼 | AI-IP Strategy OS</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    .manual-header {
+      background: linear-gradient(135deg, #0a0f2e 0%, #1e1b4b 50%, #312e81 100%);
+      padding: 3rem 2rem;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .manual-layout {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: 2rem;
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem;
+    }
+    .manual-sidebar {
+      position: sticky;
+      top: 80px;
+      height: fit-content;
+    }
+    .sidebar-nav {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem;
+    }
+    .sidebar-section {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-400);
+      margin: 1rem 0 0.5rem;
+      padding-left: 0.5rem;
+    }
+    .sidebar-link {
+      display: block;
+      padding: 0.45rem 0.75rem;
+      border-radius: 7px;
+      font-size: 0.83rem;
+      color: var(--text-300);
+      text-decoration: none;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+    .sidebar-link:hover, .sidebar-link.active {
+      color: var(--text-100);
+      background: rgba(59,130,246,0.1);
+    }
+    .manual-content { min-width: 0; }
+    .manual-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+    }
+    .manual-section h2 {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--text-100);
+      margin-bottom: 0.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .manual-section h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #93c5fd;
+      margin: 1.5rem 0 0.5rem;
+    }
+    .manual-section p {
+      font-size: 0.875rem;
+      color: var(--text-200);
+      line-height: 1.85;
+      margin-bottom: 0.875rem;
+    }
+    .manual-section ul { margin-left: 1.25rem; margin-bottom: 0.875rem; }
+    .manual-section li { font-size: 0.875rem; color: var(--text-200); line-height: 1.8; margin-bottom: 0.25rem; }
+    .step-flow {
+      display: flex;
+      gap: 0;
+      overflow-x: auto;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      margin: 1rem 0;
+    }
+    .flow-step {
+      flex: 1;
+      min-width: 100px;
+      padding: 0.875rem 0.75rem;
+      text-align: center;
+      background: var(--bg-surface);
+      border-right: 1px solid var(--border);
+      font-size: 0.75rem;
+    }
+    .flow-step:last-child { border-right: none; }
+    .flow-step .fs-num { font-size: 1rem; font-weight: 900; color: #60a5fa; display: block; margin-bottom: 0.25rem; }
+    .flow-step .fs-name { font-weight: 600; color: var(--text-200); }
+    .flow-step .fs-desc { color: var(--text-400); margin-top: 0.2rem; font-size: 0.7rem; }
+    .formula-box {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-bright);
+      border-radius: 10px;
+      padding: 1.25rem;
+      font-family: 'Courier New', monospace;
+      font-size: 0.875rem;
+      line-height: 2;
+      color: var(--text-100);
+      margin: 0.75rem 0;
+    }
+    .tip-box {
+      background: rgba(59,130,246,0.07);
+      border: 1px solid rgba(59,130,246,0.2);
+      border-radius: 9px;
+      padding: 1rem;
+      font-size: 0.83rem;
+      color: #bfdbfe;
+      line-height: 1.75;
+      margin: 0.75rem 0;
+    }
+    .warn-box {
+      background: rgba(245,158,11,0.07);
+      border: 1px solid rgba(245,158,11,0.2);
+      border-radius: 9px;
+      padding: 1rem;
+      font-size: 0.83rem;
+      color: #fde68a;
+      line-height: 1.75;
+      margin: 0.75rem 0;
+    }
+    .key-box {
+      display: inline-block;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-bright);
+      border-radius: 5px;
+      padding: 0.1rem 0.5rem;
+      font-family: monospace;
+      font-size: 0.8rem;
+      color: var(--text-100);
+    }
+    @media(max-width:860px) {
+      .manual-layout { grid-template-columns: 1fr; }
+      .manual-sidebar { position: static; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="manual-header">
+  <div class="container">
+    <div style="display:flex;align-items:center;gap:1rem">
+      <span style="font-size:2.5rem">📖</span>
+      <div>
+        <h1 style="font-size:1.75rem;font-weight:800;margin-bottom:0.25rem">사용 매뉴얼</h1>
+        <p style="color:rgba(255,255,255,0.65);font-size:0.9rem">AI-IP Strategy OS 완전 사용 가이드</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="manual-layout">
+
+  <!-- Sidebar -->
+  <aside class="manual-sidebar">
+    <div class="sidebar-nav">
+      <div class="sidebar-section">시작하기</div>
+      <a class="sidebar-link active" href="#start">시작하기</a>
+      <a class="sidebar-link" href="#apikey">API Key 설정</a>
+
+      <div class="sidebar-section">특허 출원</div>
+      <a class="sidebar-link" href="#patent-flow">특허 고도화 흐름</a>
+      <a class="sidebar-link" href="#patent-steps">7단계 상세 설명</a>
+      <a class="sidebar-link" href="#psm">PSM 점수 모델</a>
+      <a class="sidebar-link" href="#rsi">RSI 권리 강도</a>
+
+      <div class="sidebar-section">저작권 등록</div>
+      <a class="sidebar-link" href="#copy-flow">저작권 고도화 흐름</a>
+      <a class="sidebar-link" href="#copy-steps">6단계 상세 설명</a>
+
+      <div class="sidebar-section">포트폴리오</div>
+      <a class="sidebar-link" href="#portfolio">포트폴리오 관리</a>
+      <a class="sidebar-link" href="#dashboard">대시보드 활용</a>
+
+      <div class="sidebar-section">참고</div>
+      <a class="sidebar-link" href="#faq">자주 묻는 질문</a>
+      <a class="sidebar-link" href="#tips">전문가 팁</a>
+    </div>
+  </aside>
+
+  <!-- Content -->
+  <main class="manual-content">
+
+    <!-- 시작하기 -->
+    <div class="manual-section" id="start">
+      <h2>🚀 시작하기</h2>
+      <p>AI-IP Strategy OS는 Gemini AI를 활용하여 특허 출원과 저작권 등록 과정을 자동으로 고도화하는 플랫폼입니다. 아이디어를 입력하면 AI가 단계적으로 분석하고, 최종 법적 서류를 자동 생성합니다.</p>
+
+      <h3>기본 사용 흐름</h3>
+      <div class="step-flow">
+        <div class="flow-step"><span class="fs-num">1</span><span class="fs-name">홈에서 입력</span><span class="fs-desc">제목·아이디어·파일</span></div>
+        <div class="flow-step"><span class="fs-num">2</span><span class="fs-name">유형 선택</span><span class="fs-desc">특허 또는 저작권</span></div>
+        <div class="flow-step"><span class="fs-num">3</span><span class="fs-name">AI 단계 분석</span><span class="fs-desc">각 스텝 실행</span></div>
+        <div class="flow-step"><span class="fs-num">4</span><span class="fs-name">점수 확인</span><span class="fs-desc">PSM·RSI 평가</span></div>
+        <div class="flow-step"><span class="fs-num">5</span><span class="fs-name">서류 완성</span><span class="fs-desc">PDF 출력</span></div>
+      </div>
+
+      <div class="tip-box">💡 <strong>Tip:</strong> 아이디어 설명은 최소 200자 이상 상세하게 작성할수록 AI 분석 품질이 향상됩니다. 기존 기술과의 차별점, 핵심 작동 원리를 명확히 포함하세요.</div>
+    </div>
+
+    <!-- API Key -->
+    <div class="manual-section" id="apikey">
+      <h2>🔑 Gemini API Key 설정</h2>
+      <p>플랫폼의 AI 기능을 사용하려면 Google AI Studio에서 발급한 Gemini API Key가 필요합니다.</p>
+      <h3>발급 방법</h3>
+      <ul>
+        <li><strong>1단계:</strong> Google AI Studio (<code class="key-box">aistudio.google.com</code>) 접속</li>
+        <li><strong>2단계:</strong> Google 계정으로 로그인</li>
+        <li><strong>3단계:</strong> 상단 메뉴 "Get API Key" 클릭</li>
+        <li><strong>4단계:</strong> "Create API Key" 버튼 클릭</li>
+        <li><strong>5단계:</strong> 발급된 <code class="key-box">AIzaSy...</code> 형태의 키 복사</li>
+      </ul>
+      <h3>입력 방법</h3>
+      <ul>
+        <li>상단 내비게이션의 <span class="badge badge-yellow" style="font-size:0.72rem">🔑 API Key 설정</span> 버튼 클릭</li>
+        <li>발급받은 API Key 붙여넣기 후 저장</li>
+        <li>키는 브라우저 로컬스토리지에만 저장되며 외부로 전송되지 않습니다</li>
+      </ul>
+      <div class="warn-box">⚠ API Key는 개인 정보입니다. 공유 컴퓨터에서는 사용 후 반드시 로컬스토리지를 삭제하세요.</div>
+    </div>
+
+    <!-- 특허 흐름 -->
+    <div class="manual-section" id="patent-flow">
+      <h2>⚙️ 특허 출원 고도화 흐름</h2>
+      <p>특허 출원 고도화는 7단계로 진행되며, 각 단계를 순서대로 실행하면 최종 특허 명세서가 자동으로 완성됩니다.</p>
+      <div class="step-flow">
+        <div class="flow-step"><span class="fs-num">S1</span><span class="fs-name">핵심 추출</span></div>
+        <div class="flow-step"><span class="fs-num">S2</span><span class="fs-name">선행기술</span></div>
+        <div class="flow-step"><span class="fs-num">S3</span><span class="fs-name">구성분해</span></div>
+        <div class="flow-step"><span class="fs-num">S4</span><span class="fs-name">청구항</span></div>
+        <div class="flow-step"><span class="fs-num">S5</span><span class="fs-name">실시예</span></div>
+        <div class="flow-step"><span class="fs-num">S6</span><span class="fs-name">점수평가</span></div>
+        <div class="flow-step"><span class="fs-num">S7</span><span class="fs-name">명세서</span></div>
+      </div>
+      <p>각 단계의 "실행" 버튼을 클릭하면 Gemini AI가 해당 단계를 분석합니다. 실행 후 "다음" 버튼이 활성화되어 다음 단계로 진행할 수 있습니다.</p>
+    </div>
+
+    <!-- 특허 단계 -->
+    <div class="manual-section" id="patent-steps">
+      <h2>⚙️ 특허 7단계 상세 설명</h2>
+
+      <h3>STEP 1 · 기술 핵심 추출</h3>
+      <p>AI가 입력된 아이디어에서 발명의 핵심 개념, 기술적 과제, 해결 수단을 자동 추출합니다. 추가 질문(차별점, 상업적 핵심)을 입력하면 분석 품질이 향상됩니다.</p>
+
+      <h3>STEP 2 · 선행기술 분석</h3>
+      <p>발명과 유사한 기존 기술을 분석하고 차별성을 구조화합니다. 신규성 위험도를 자동 평가하여 보완 방향을 제시합니다.</p>
+
+      <h3>STEP 3 · 구성요소 분해</h3>
+      <p>발명을 구성하는 핵심 요소(A, B, C...)로 분해하고 작동 흐름을 체계화합니다. 필수 청구항 구성요소와 선택적 요소를 구분합니다.</p>
+
+      <h3>STEP 4 · 청구항 설계</h3>
+      <p>독립항(방법/시스템/장치), 종속항(15개 이상), 회피설계 방어항을 자동 작성합니다. 한국 특허법 제42조 형식을 준수합니다.</p>
+
+      <h3>STEP 5 · 실시예 생성</h3>
+      <p>구체적 구현 사례, 변형 실시예, 산업별 적용 사례를 생성하여 권리 범위를 확장합니다.</p>
+
+      <h3>STEP 6 · 특허 점수 평가</h3>
+      <p>PSM(특허 점수화 모델)과 RSI(권리 강도 지수)를 슬라이더로 조절하여 산출합니다. 거절 확률도 예측합니다.</p>
+
+      <h3>STEP 7 · 최종 명세서</h3>
+      <p>특허청 제출용 완성 명세서(발명의 명칭~청구범위)를 AI가 자동 작성합니다. PDF 출력이 가능합니다.</p>
+    </div>
+
+    <!-- PSM -->
+    <div class="manual-section" id="psm">
+      <h2>📐 PSM 특허 점수화 모델</h2>
+      <p>PSM(Patent Scoring Model)은 특허 출원 전 특허의 강도를 정량 평가하는 100점 기반 모델입니다.</p>
+      <div class="formula-box">
+PSM = 0.25×신규성 + 0.20×진보성 + 0.10×산업성<br>
+      + 0.10×기술효과 + 0.15×청구항 완성도<br>
+      + 0.10×방어력 + 0.10×확장성
+      </div>
+      <p>각 항목은 1~5점으로 평가하며, 슬라이더를 통해 직접 조정할 수 있습니다.</p>
+      <ul>
+        <li><strong style="color:#34d399">80점 이상</strong> — 우수: 등록 가능성 높음</li>
+        <li><strong style="color:#fbbf24">60~79점</strong> — 양호: 일부 보완 권장</li>
+        <li><strong style="color:#f59e0b">40~59점</strong> — 보통: 주요 항목 강화 필요</li>
+        <li><strong style="color:#f87171">40점 미만</strong> — 미흡: 전면 재설계 검토</li>
+      </ul>
+    </div>
+
+    <!-- RSI -->
+    <div class="manual-section" id="rsi">
+      <h2>💎 RSI 권리 강도 지수</h2>
+      <p>RSI(Right Strength Index)는 특허 등록 이후의 전략적 권리 가치를 평가하는 복합 지수입니다.</p>
+      <div class="formula-box">
+RSI = (L × T × M) ÷ V<br><br>
+L = 법적 안정성 (선행기술 충돌 위험 역수)<br>
+T = 기술 복잡도 (기술 재현 난이도)<br>
+M = 시장 독점성 (시장 진입 장벽)<br>
+V = 우회 가능성 (경쟁사의 회피 설계 가능성)
+      </div>
+      <ul>
+        <li><strong style="color:#60a5fa">150 이상</strong> — 전략적 핵심 특허</li>
+        <li><strong style="color:#34d399">100~150</strong> — 강한 권리</li>
+        <li><strong style="color:#fbbf24">50~100</strong> — 보통 수준</li>
+        <li><strong style="color:#f87171">50 미만</strong> — 약한 권리, 강화 필요</li>
+      </ul>
+      <div class="tip-box">💡 RSI를 높이려면 V(우회 가능성)를 낮추는 것이 핵심입니다. 회피설계 방어항을 충분히 추가하고, 다양한 종속항으로 권리 범위를 입체적으로 구성하세요.</div>
+    </div>
+
+    <!-- 저작권 흐름 -->
+    <div class="manual-section" id="copy-flow">
+      <h2>©️ 저작권 등록 고도화 흐름</h2>
+      <p>저작권 등록 고도화는 6단계로 진행됩니다.</p>
+      <div class="step-flow">
+        <div class="flow-step"><span class="fs-num">S1</span><span class="fs-name">유형 분류</span></div>
+        <div class="flow-step"><span class="fs-num">S2</span><span class="fs-name">창작성 분석</span></div>
+        <div class="flow-step"><span class="fs-num">S3</span><span class="fs-name">창작 경위</span></div>
+        <div class="flow-step"><span class="fs-num">S4</span><span class="fs-name">보호 범위</span></div>
+        <div class="flow-step"><span class="fs-num">S5</span><span class="fs-name">등록 신청서</span></div>
+        <div class="flow-step"><span class="fs-num">S6</span><span class="fs-name">최종 서류</span></div>
+      </div>
+    </div>
+
+    <!-- 저작권 단계 -->
+    <div class="manual-section" id="copy-steps">
+      <h2>©️ 저작권 6단계 상세 설명</h2>
+
+      <h3>STEP 1 · 창작물 유형 분류</h3>
+      <p>문서, 프로그램 코드, 디자인, 음악, 영상, 플랫폼/시스템 중 해당 유형을 선택합니다. AI가 법적 저작물 유형을 정밀 분류하고 등록 전략을 제시합니다.</p>
+
+      <h3>STEP 2 · 창작성 분석</h3>
+      <p>표현의 독창성, 구성의 독창성, 아이디어와 표현의 분리 원칙을 분석합니다. 창작성 진술서 초안을 자동 생성합니다.</p>
+
+      <h3>STEP 3 · 창작 과정 기록</h3>
+      <p>최초 기획일, 제작 과정, 공동 저작자 여부를 입력하면 공식 창작 경위서가 자동 작성됩니다.</p>
+
+      <h3>STEP 4 · 보호 범위 확정</h3>
+      <p>2차 저작물 허용 여부, 이용 허락 범위 등을 설정합니다. 보호 대상과 제외 요소가 명확히 정의됩니다.</p>
+
+      <h3>STEP 5 · 등록 신청서 작성</h3>
+      <p>한국저작권위원회 제출용 공식 등록 신청서를 자동 완성합니다.</p>
+
+      <h3>STEP 6 · 최종 서류 패키지</h3>
+      <p>등록 신청서, 창작성 진술서, 창작 경위서, 보호 범위 명세서를 통합한 서류 패키지가 생성됩니다.</p>
+    </div>
+
+    <!-- 포트폴리오 -->
+    <div class="manual-section" id="portfolio">
+      <h2>🗂️ 포트폴리오 관리</h2>
+      <p>분석 완료된 프로젝트를 포트폴리오에 저장하여 한눈에 관리할 수 있습니다.</p>
+      <ul>
+        <li>특허/저작권 분석 완료 후 "포트폴리오에 추가" 버튼 클릭</li>
+        <li>포트폴리오 페이지에서 PSM, RSI, 거절위험 등 핵심 지표 일괄 확인</li>
+        <li>유형 필터 및 검색으로 원하는 IP 자산을 빠르게 탐색</li>
+        <li>내보내기 기능으로 TXT 파일 다운로드 가능</li>
+      </ul>
+    </div>
+
+    <!-- 대시보드 -->
+    <div class="manual-section" id="dashboard">
+      <h2>📊 대시보드 활용</h2>
+      <p>대시보드는 전체 IP 포트폴리오의 종합 현황을 시각화합니다.</p>
+      <ul>
+        <li><strong>레이더 차트</strong>: 특허 강도 6개 항목의 균형을 확인</li>
+        <li><strong>게이지</strong>: PSM, RSI, 거절위험을 직관적으로 표시</li>
+        <li><strong>AI 전략 분석</strong>: 포트폴리오 강점·취약점·개선 방향을 AI가 자동 생성</li>
+        <li><strong>타임라인</strong>: 분석 이력과 향후 일정을 관리</li>
+      </ul>
+    </div>
+
+    <!-- FAQ -->
+    <div class="manual-section" id="faq">
+      <h2>❓ 자주 묻는 질문</h2>
+
+      <h3>Q. AI가 생성한 명세서를 그대로 제출할 수 있나요?</h3>
+      <p>A. AI 생성 결과물은 고품질 초안이지만, 실제 제출 전 반드시 전문 변리사의 검토를 받으시길 권장합니다. 본 플랫폼은 변리사 서비스를 대체하지 않습니다.</p>
+
+      <h3>Q. 입력한 아이디어는 안전하게 보호되나요?</h3>
+      <p>A. 모든 데이터는 브라우저의 로컬스토리지에만 저장되며, 외부 서버에 따로 전송·저장되지 않습니다. Gemini API 호출 시 입력 내용이 Google 서버로 전송되는 점을 유의해주세요.</p>
+
+      <h3>Q. PSM 점수와 RSI는 공식 지표인가요?</h3>
+      <p>A. PSM과 RSI는 본 플랫폼의 독자적 분석 모델입니다. 특허청 공식 평가 기준이 아니며, 출원 전략 수립을 위한 참고 지표로 활용하시기 바랍니다.</p>
+
+      <h3>Q. 파일 업로드는 어떻게 처리되나요?</h3>
+      <p>A. 업로드된 파일명만 기록되며, 현재 버전에서는 파일 내용은 AI 분석에 직접 사용되지 않습니다. 텍스트 입력창에 핵심 내용을 직접 입력해주세요.</p>
+    </div>
+
+    <!-- Tips -->
+    <div class="manual-section" id="tips">
+      <h2>⭐ 전문가 팁</h2>
+
+      <h3>특허 청구항 작성 팁</h3>
+      <ul>
+        <li>독립항은 핵심 기술만 포함, 가능한 넓게 작성</li>
+        <li>종속항으로 세부 기능을 단계별로 보호</li>
+        <li>방법 청구항과 시스템 청구항을 모두 작성해 보호 범위 확대</li>
+        <li>구체적 수치나 특정 소재는 종속항에 배치</li>
+      </ul>
+
+      <h3>RSI를 높이는 전략</h3>
+      <ul>
+        <li>기술을 복잡하게 구현하여 T(기술 복잡도) 향상</li>
+        <li>여러 구성요소의 조합을 청구항에 포함하여 회피 어렵게 구성</li>
+        <li>핵심 구성요소에 대한 다양한 변형 실시예로 V(우회 가능성) 감소</li>
+      </ul>
+
+      <h3>저작권 등록 팁</h3>
+      <ul>
+        <li>창작 과정을 날짜별로 상세히 기록해 두면 분쟁 시 강력한 증거가 됩니다</li>
+        <li>스케치, 초안, 수정 버전을 보관하여 창작 과정을 입증하세요</li>
+        <li>코드/소프트웨어는 버전 관리(git)로 창작 이력을 자동 보존할 수 있습니다</li>
+      </ul>
+
+      <div class="tip-box">🏆 <strong>핵심 조언:</strong> 이 플랫폼은 IP 전략 수립과 초안 작성에 특화되어 있습니다. AI가 생성한 결과물을 기반으로 변리사와 협업하면 가장 효과적인 결과를 얻을 수 있습니다.</div>
+    </div>
+
+  </main>
+</div>
+
+<script src="assets/js/common.js"></script>
+<script src="assets/js/layout.js"></script>
+<script>
+// Highlight active sidebar link on scroll
+const sections = document.querySelectorAll('.manual-section');
+const sidebarLinks = document.querySelectorAll('.sidebar-link');
+
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(sec => {
+    if (window.scrollY >= sec.offsetTop - 120) current = sec.id;
+  });
+  sidebarLinks.forEach(link => {
+    link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+  });
+});
+
+// Smooth scroll for sidebar links
+sidebarLinks.forEach(link => {
+  link.addEventListener('click', (e) => {
+    const target = document.querySelector(link.getAttribute('href'));
+    if (target) { e.preventDefault(); target.scrollIntoView({ behavior:'smooth', block:'start' }); }
+  });
+});
+</script>
+</body>
+</html>

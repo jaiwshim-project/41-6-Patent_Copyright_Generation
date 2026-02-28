@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>포트폴리오 관리 | AI-IP Strategy OS</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    .port-header {
+      background: linear-gradient(135deg, #0c1445 0%, #1e3a8a 50%, #312e81 100%);
+      padding: 2.5rem 2rem;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .ip-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.5rem;
+      transition: all 0.25s;
+      cursor: default;
+    }
+    .ip-card:hover {
+      border-color: var(--border-bright);
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+    .ip-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+    .ip-type-icon { font-size: 2rem; margin-right: 0.75rem; }
+    .ip-title { font-size: 1rem; font-weight: 700; color: var(--text-100); }
+    .ip-meta { font-size: 0.78rem; color: var(--text-400); margin-top: 0.2rem; }
+    .ip-scores {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+      margin: 1rem 0;
+    }
+    .ip-score-item {
+      background: var(--bg-surface);
+      border-radius: 8px;
+      padding: 0.6rem 0.75rem;
+      text-align: center;
+    }
+    .ip-score-val { font-size: 1.25rem; font-weight: 800; }
+    .ip-score-lbl { font-size: 0.65rem; color: var(--text-400); margin-top: 0.1rem; }
+    .portfolio-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.25rem;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 5rem 2rem;
+      color: var(--text-400);
+    }
+    .empty-icon { font-size: 4rem; margin-bottom: 1rem; opacity: 0.5; }
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .stat-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.1rem 1.25rem;
+    }
+    .stat-num { font-size: 1.75rem; font-weight: 900; color: var(--text-100); }
+    .stat-lbl { font-size: 0.72rem; color: var(--text-400); margin-top: 0.2rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    @media(max-width:900px) { .stats-row { grid-template-columns: repeat(3, 1fr); } }
+    @media(max-width:600px) { .stats-row { grid-template-columns: repeat(2, 1fr); } }
+  </style>
+</head>
+<body>
+
+<div class="port-header">
+  <div class="container">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem">
+      <div>
+        <h1 style="font-size:1.75rem;font-weight:800;margin-bottom:0.25rem">🗂️ IP 포트폴리오 관리</h1>
+        <p style="color:rgba(255,255,255,0.65);font-size:0.875rem">등록한 특허·저작권 자산을 한눈에 관리합니다</p>
+      </div>
+      <div style="display:flex;gap:0.75rem;flex-wrap:wrap">
+        <button class="btn btn-outline" onclick="addSampleData()">+ 샘플 데이터 추가</button>
+        <button class="btn btn-primary" onclick="addFromProject()">+ 현재 프로젝트 추가</button>
+        <button class="btn btn-secondary" onclick="exportAll()">📤 내보내기</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="page-content">
+
+  <!-- Stats Row -->
+  <div class="stats-row">
+    <div class="stat-box">
+      <div class="stat-num" id="st_total" style="color:#60a5fa">0</div>
+      <div class="stat-lbl">전체 IP 자산</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num" id="st_patent" style="color:#a78bfa">0</div>
+      <div class="stat-lbl">특허</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num" id="st_copy" style="color:#34d399">0</div>
+      <div class="stat-lbl">저작권</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num" id="st_avgpsm" style="color:#fbbf24">-</div>
+      <div class="stat-lbl">평균 PSM</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num" id="st_avgrsi" style="color:#f87171">-</div>
+      <div class="stat-lbl">평균 RSI</div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div style="display:flex;gap:0.75rem;margin-bottom:1.5rem;flex-wrap:wrap;align-items:center">
+    <button class="btn btn-outline" id="filter_all" onclick="setFilter('all')" style="border-color:var(--primary);color:#93c5fd">전체</button>
+    <button class="btn btn-outline" id="filter_patent" onclick="setFilter('patent')">⚙️ 특허</button>
+    <button class="btn btn-outline" id="filter_copyright" onclick="setFilter('copyright')">©️ 저작권</button>
+    <div style="margin-left:auto;display:flex;gap:0.5rem">
+      <input type="text" id="searchInput" class="form-input" placeholder="🔍 검색..."
+        style="width:220px;padding:0.5rem 0.875rem;font-size:0.83rem" oninput="renderCards()">
+    </div>
+  </div>
+
+  <!-- Cards -->
+  <div id="portfolioGrid" class="portfolio-grid"></div>
+
+</div>
+
+<script src="assets/js/common.js"></script>
+<script src="assets/js/layout.js"></script>
+<script>
+let currentFilter = 'all';
+
+function setFilter(f) {
+  currentFilter = f;
+  ['all','patent','copyright'].forEach(k => {
+    const btn = document.getElementById('filter_' + k);
+    if (btn) {
+      btn.style.borderColor = k === f ? 'var(--primary)' : '';
+      btn.style.color = k === f ? '#93c5fd' : '';
+      btn.style.background = k === f ? 'rgba(59,130,246,0.1)' : '';
+    }
+  });
+  renderCards();
+}
+
+function getPortfolio() {
+  try { return JSON.parse(localStorage.getItem('ip_portfolio') || '[]'); } catch { return []; }
+}
+function savePortfolio(d) { localStorage.setItem('ip_portfolio', JSON.stringify(d)); }
+
+function renderCards() {
+  const portfolio = getPortfolio();
+  const query = document.getElementById('searchInput').value.toLowerCase();
+  const filtered = portfolio.filter(p => {
+    const matchFilter = currentFilter === 'all' || p.type === currentFilter;
+    const matchSearch = !query || p.title.toLowerCase().includes(query) || (p.industry||'').toLowerCase().includes(query);
+    return matchFilter && matchSearch;
+  });
+
+  const grid = document.getElementById('portfolioGrid');
+  if (!filtered.length) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
+      <div class="empty-icon">📂</div>
+      <p style="font-size:1rem;font-weight:700;color:var(--text-200);margin-bottom:0.5rem">포트폴리오가 비어있습니다</p>
+      <p style="font-size:0.875rem">특허 또는 저작권 분석을 완료하면 자동으로 추가됩니다.</p>
+      <div style="margin-top:1.5rem;display:flex;gap:0.75rem;justify-content:center">
+        <a href="patent.html" class="btn btn-primary">⚙️ 특허 분석 시작</a>
+        <a href="copyright.html" class="btn btn-success">©️ 저작권 등록 시작</a>
+      </div>
+    </div>`;
+    return;
+  }
+
+  grid.innerHTML = filtered.map((item, idx) => {
+    const isPatent = item.type === 'patent' || item.type !== 'copyright';
+    const psmNum = parseFloat(item.psm);
+    const rsiNum = parseFloat(item.rsi);
+    const psmColor = isNaN(psmNum) ? '#4d6a85' : psmNum >= 80 ? '#34d399' : psmNum >= 60 ? '#fbbf24' : '#f87171';
+    const rsiColor = isNaN(rsiNum) ? '#4d6a85' : rsiNum >= 150 ? '#60a5fa' : rsiNum >= 100 ? '#34d399' : rsiNum >= 50 ? '#fbbf24' : '#f87171';
+    const rsiLabel = isNaN(rsiNum) ? '-' : rsiNum >= 150 ? '전략핵심' : rsiNum >= 100 ? '강함' : rsiNum >= 50 ? '보통' : '약함';
+    const rejPct = parseFloat(item.rejProb);
+    const rejColor = isNaN(rejPct) ? '#4d6a85' : rejPct >= 60 ? '#f87171' : rejPct >= 40 ? '#fbbf24' : '#34d399';
+    const dateStr = item.addedAt ? new Date(item.addedAt).toLocaleDateString('ko-KR') : '-';
+
+    return `<div class="ip-card">
+      <div class="ip-card-header">
+        <div style="display:flex;align-items:flex-start">
+          <span class="ip-type-icon">${isPatent ? '⚙️' : '©️'}</span>
+          <div>
+            <div class="ip-title">${item.title}</div>
+            <div class="ip-meta">${item.industry || '분야 미지정'} · ${dateStr}</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:0.35rem;align-items:flex-end">
+          <span class="badge ${isPatent ? 'badge-blue' : 'badge-green'}">${isPatent ? '특허' : '저작권'}</span>
+          <button onclick="removeItem(${idx})"
+            style="background:none;border:none;color:var(--text-400);cursor:pointer;font-size:0.75rem;padding:0.1rem 0.3rem;border-radius:4px;transition:color 0.2s"
+            onmouseover="this.style.color='#f87171'" onmouseout="this.style.color='var(--text-400)'">✕ 삭제</button>
+        </div>
+      </div>
+
+      ${isPatent ? `<div class="ip-scores">
+        <div class="ip-score-item">
+          <div class="ip-score-val" style="color:${psmColor}">${item.psm !== undefined && item.psm !== '-' ? item.psm : '-'}</div>
+          <div class="ip-score-lbl">PSM 점수</div>
+        </div>
+        <div class="ip-score-item">
+          <div class="ip-score-val" style="color:${rsiColor}">${item.rsi !== undefined && item.rsi !== '-' ? item.rsi : '-'}</div>
+          <div class="ip-score-lbl">RSI 지수</div>
+        </div>
+        <div class="ip-score-item">
+          <div class="ip-score-val" style="color:${rejColor}">${item.rejProb !== undefined && item.rejProb !== '-' ? item.rejProb + '%' : '-'}</div>
+          <div class="ip-score-lbl">거절위험</div>
+        </div>
+      </div>` : `<div class="ip-scores">
+        <div class="ip-score-item" style="grid-column:span 3">
+          <div style="font-size:0.85rem;color:var(--text-300)">저작권 등록 · 창작성 분석 완료</div>
+        </div>
+      </div>`}
+
+      <div style="display:flex;gap:0.5rem;margin-top:0.75rem">
+        <span class="badge ${psmNum >= 80 ? 'badge-green' : psmNum >= 60 ? 'badge-yellow' : 'badge-red'}"
+          style="font-size:0.65rem">${isPatent ? rsiLabel : '등록완료'}</span>
+        <a href="${isPatent ? 'patent.html' : 'copyright.html'}"
+          class="btn btn-outline" style="padding:0.25rem 0.65rem;font-size:0.72rem;margin-left:auto">
+          다시 분석 →
+        </a>
+      </div>
+    </div>`;
+  }).join('');
+
+  updateStats(portfolio);
+}
+
+function updateStats(portfolio) {
+  const patents = portfolio.filter(p => p.type === 'patent');
+  const copyrights = portfolio.filter(p => p.type === 'copyright');
+  document.getElementById('st_total').textContent = portfolio.length;
+  document.getElementById('st_patent').textContent = patents.length;
+  document.getElementById('st_copy').textContent = copyrights.length;
+
+  const psmVals = patents.map(p => parseFloat(p.psm)).filter(v => !isNaN(v));
+  const rsiVals = patents.map(p => parseFloat(p.rsi)).filter(v => !isNaN(v));
+  if (psmVals.length) document.getElementById('st_avgpsm').textContent = (psmVals.reduce((a,b)=>a+b,0)/psmVals.length).toFixed(0);
+  if (rsiVals.length) document.getElementById('st_avgrsi').textContent = Math.round(rsiVals.reduce((a,b)=>a+b,0)/rsiVals.length);
+}
+
+function removeItem(idx) {
+  const portfolio = getPortfolio();
+  portfolio.splice(idx, 1);
+  savePortfolio(portfolio);
+  renderCards();
+  showToast('삭제되었습니다.', 'info');
+}
+
+function addFromProject() {
+  const proj = getProject();
+  if (!proj || !proj.title) { showToast('먼저 분석을 완료해주세요.', 'warning'); return; }
+  const portfolio = getPortfolio();
+  if (portfolio.find(p => p.title === proj.title)) { showToast('이미 추가된 프로젝트입니다.', 'warning'); return; }
+  portfolio.push({
+    id: Date.now(),
+    title: proj.title,
+    type: proj.type || 'patent',
+    industry: proj.industry || '-',
+    psm: proj.psm || '-',
+    rsi: proj.rsi || '-',
+    rejProb: proj.rejProb || '-',
+    addedAt: Date.now()
+  });
+  savePortfolio(portfolio);
+  renderCards();
+  showToast('포트폴리오에 추가되었습니다!', 'success');
+}
+
+function addSampleData() {
+  const samples = [
+    { id:1, title:'AI 기반 실시간 음성 번역 시스템', type:'patent', industry:'AI/ML', psm:82, rsi:126, rejProb:22, addedAt: Date.now()-86400000*5 },
+    { id:2, title:'스마트 에너지 관리 플랫폼', type:'patent', industry:'에너지', psm:74, rsi:98, rejProb:35, addedAt: Date.now()-86400000*12 },
+    { id:3, title:'의료 영상 분석 AI 알고리즘', type:'patent', industry:'바이오', psm:91, rsi:168, rejProb:15, addedAt: Date.now()-86400000*20 },
+    { id:4, title:'IP 전략 분석 플랫폼 UI/UX', type:'copyright', industry:'소프트웨어', psm:'-', rsi:'-', rejProb:'-', addedAt: Date.now()-86400000*3 },
+    { id:5, title:'딥러닝 학습 데이터셋 구조', type:'copyright', industry:'AI/ML', psm:'-', rsi:'-', rejProb:'-', addedAt: Date.now()-86400000*8 },
+  ];
+  const portfolio = getPortfolio();
+  samples.forEach(s => { if (!portfolio.find(p => p.title === s.title)) portfolio.push(s); });
+  savePortfolio(portfolio);
+  renderCards();
+  showToast('샘플 데이터가 추가되었습니다.', 'success');
+}
+
+function exportAll() {
+  const portfolio = getPortfolio();
+  const lines = [`AI-IP Strategy OS — IP 포트폴리오 리포트`, `생성: ${new Date().toLocaleDateString('ko-KR')}`, '', `총 ${portfolio.length}건`, ''];
+  portfolio.forEach((p,i) => {
+    lines.push(`${i+1}. [${p.type==='patent'?'특허':'저작권'}] ${p.title}`);
+    lines.push(`   분야: ${p.industry||'-'} | PSM: ${p.psm||'-'} | RSI: ${p.rsi||'-'} | 거절위험: ${p.rejProb||'-'}%`);
+    lines.push('');
+  });
+  const blob = new Blob([lines.join('\n')], { type:'text/plain;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `IP_Portfolio_${new Date().toISOString().slice(0,10)}.txt`;
+  a.click();
+  showToast('내보내기 완료!', 'success');
+}
+
+window.addEventListener('DOMContentLoaded', renderCards);
+</script>
+</body>
+</html>
