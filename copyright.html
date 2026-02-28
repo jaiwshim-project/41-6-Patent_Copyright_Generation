@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>저작권 등록 고도화 | AI-IP Strategy OS</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    .copy-header {
+      background: linear-gradient(135deg, #064e3b 0%, #047857 50%, #0369a1 100%);
+      padding: 2.5rem 2rem;
+      border-bottom: 1px solid rgba(100,220,180,0.15);
+    }
+    .copy-header h1 { color: #fcd34d !important; }
+    .copy-header p  { color: rgba(255,255,255,0.82) !important; }
+
+    .step-panel { display: none; }
+    .step-panel.active { display: block; }
+
+    .type-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .type-card {
+      background: #f8fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 1rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .type-card:hover, .type-card.selected {
+      border-color: #059669;
+      background: #f0fdf4;
+      box-shadow: 0 4px 16px rgba(5,150,105,0.12);
+    }
+    .type-icon { font-size: 2rem; margin-bottom: 0.5rem; display: block; }
+    .type-name { font-size: 0.875rem; font-weight: 700; color: var(--text-200); }
+
+    .reg-field {
+      display: grid;
+      grid-template-columns: 160px 1fr;
+      gap: 1rem;
+      padding: 0.875rem 0;
+      border-bottom: 1px solid #f1f5f9;
+      align-items: start;
+    }
+    .reg-field:last-child { border-bottom: none; }
+    .reg-label { font-size: 0.8rem; color: var(--text-300); padding-top: 0.25rem; font-weight: 600; }
+    .reg-value { font-size: 0.875rem; color: var(--text-200); }
+
+    @media (max-width: 768px) {
+      .type-grid { grid-template-columns: repeat(2, 1fr); }
+      .reg-field { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navbar injected by layout.js -->
+
+<!-- Header -->
+<div class="copy-header">
+  <div class="container">
+    <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem">
+      <span style="font-size:2rem">©️</span>
+      <div>
+        <h1 style="font-size:1.75rem;font-weight:800">저작권 등록 고도화</h1>
+        <p style="color:rgba(255,255,255,0.7);font-size:0.9rem">창작물 분석 → 독창성 진단 → 경위 정리 → 등록 서류 완성 (6단계)</p>
+      </div>
+    </div>
+    <div id="projectInfoBar" style="background:rgba(0,0,0,0.2);border-radius:8px;padding:0.75rem 1rem;font-size:0.875rem;color:rgba(255,255,255,0.8)">
+      프로젝트 로딩 중...
+    </div>
+  </div>
+</div>
+
+<!-- Main -->
+<div class="page-content">
+
+  <!-- Step Navigation -->
+  <div class="step-nav-wrap">
+    <button class="step-btn active" id="nav-1" onclick="goStep(1)">
+      <span class="step-n">1</span>유형 분류
+    </button>
+    <button class="step-btn" id="nav-2" onclick="goStep(2)">
+      <span class="step-n">2</span>창작성 분석
+    </button>
+    <button class="step-btn" id="nav-3" onclick="goStep(3)">
+      <span class="step-n">3</span>창작 경위
+    </button>
+    <button class="step-btn" id="nav-4" onclick="goStep(4)">
+      <span class="step-n">4</span>보호 범위
+    </button>
+    <button class="step-btn" id="nav-5" onclick="goStep(5)">
+      <span class="step-n">5</span>등록 신청서
+    </button>
+    <button class="step-btn" id="nav-6" onclick="goStep(6)">
+      <span class="step-n">6</span>최종 서류
+    </button>
+  </div>
+
+  <!-- ═══════════════════════════════ STEP 1 ═══════════════════════════════ -->
+  <div class="step-panel active" id="step-1">
+    <div class="grid-2" style="gap:2rem">
+      <div>
+        <div class="card">
+          <h2 class="section-title" style="font-size:1.2rem">STEP 1 · 창작물 유형 분류</h2>
+          <p class="section-sub" style="margin-bottom:1rem">저작물의 유형을 선택하면 AI가 최적화된 등록 전략을 수립합니다.</p>
+
+          <label class="form-label" style="margin-bottom:0.75rem">창작물 유형 선택</label>
+          <div class="type-grid">
+            <div class="type-card selected" id="type_doc" onclick="selectType('문서/글')">
+              <div class="type-icon">📝</div>
+              <div class="type-name">문서 / 글</div>
+            </div>
+            <div class="type-card" id="type_code" onclick="selectType('프로그램 코드')">
+              <div class="type-icon">💻</div>
+              <div class="type-name">프로그램 코드</div>
+            </div>
+            <div class="type-card" id="type_design" onclick="selectType('디자인/시각')">
+              <div class="type-icon">🎨</div>
+              <div class="type-name">디자인 / 시각</div>
+            </div>
+            <div class="type-card" id="type_music" onclick="selectType('음악')">
+              <div class="type-icon">🎵</div>
+              <div class="type-name">음악 / 음향</div>
+            </div>
+            <div class="type-card" id="type_video" onclick="selectType('영상')">
+              <div class="type-icon">🎬</div>
+              <div class="type-name">영상 / 동영상</div>
+            </div>
+            <div class="type-card" id="type_platform" onclick="selectType('플랫폼/시스템')">
+              <div class="type-icon">⚙️</div>
+              <div class="type-name">플랫폼 / 시스템</div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">창작물 제목</label>
+            <input type="text" id="s1Title" class="form-input"
+              placeholder="등록할 저작물의 정확한 명칭">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">창작물 내용 개요</label>
+            <textarea id="s1Content" class="form-textarea"
+              placeholder="창작물의 내용, 특징, 독창성을 설명해주세요."></textarea>
+          </div>
+
+          <button class="btn btn-success btn-full" onclick="runStep1()">
+            🔍 유형 분석 실행
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+            <h3 style="font-weight:700">AI 유형 분석 결과</h3>
+            <div id="s1Loading" style="display:none"><div class="spinner"></div></div>
+          </div>
+          <div id="s1Result" class="result-box" style="min-height:380px">
+            <span style="color:var(--text-secondary)">유형을 선택하고 분석을 실행하세요.</span>
+          </div>
+        </div>
+        <div style="text-align:right;margin-top:1rem">
+          <button class="btn btn-success" onclick="goStep(2)" id="s1Next" disabled>
+            다음: 창작성 분석 →
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════ STEP 2 ═══════════════════════════════ -->
+  <div class="step-panel" id="step-2">
+    <div class="grid-2" style="gap:2rem">
+      <div>
+        <div class="card">
+          <h2 class="section-title" style="font-size:1.2rem">STEP 2 · 창작성 분석</h2>
+          <p class="section-sub" style="margin-bottom:1rem">AI가 창작물의 독창성과 표현의 창작성을 전문적으로 분석합니다.</p>
+
+          <div class="question-card">
+            <div class="q-num">Q1</div>
+            <div class="q-text">창작물에서 가장 독창적인 부분은 무엇인가요?</div>
+            <textarea id="s2q1" class="form-textarea" style="min-height:80px"
+              placeholder="표현 방식, 구성 구조, 아이디어의 독창적 발현..."></textarea>
+          </div>
+
+          <div class="question-card">
+            <div class="q-num">Q2</div>
+            <div class="q-text">기존에 유사한 저작물이 있다면 어떻게 다른가요?</div>
+            <textarea id="s2q2" class="form-textarea" style="min-height:80px"
+              placeholder="차별화된 표현 방식, 독자적인 구성..."></textarea>
+          </div>
+
+          <div class="question-card">
+            <div class="q-num">Q3</div>
+            <div class="q-text">창작에 사용된 외부 자료나 참고 자료가 있나요?</div>
+            <input type="text" id="s2q3" class="form-input"
+              placeholder="참고 자료 목록 또는 '없음'">
+          </div>
+
+          <button class="btn btn-success btn-full" onclick="runStep2()">
+            🧠 창작성 분석 실행
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+            <h3 style="font-weight:700">창작성 분석 결과</h3>
+            <div id="s2Loading" style="display:none"><div class="spinner"></div></div>
+          </div>
+          <div id="s2Result" class="result-box" style="min-height:400px">
+            <span style="color:var(--text-secondary)">분석 실행 후 결과가 표시됩니다.</span>
+          </div>
+        </div>
+        <div style="text-align:right;margin-top:1rem">
+          <button class="btn btn-success" onclick="goStep(3)" id="s2Next" disabled>
+            다음: 창작 경위 정리 →
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════ STEP 3 ═══════════════════════════════ -->
+  <div class="step-panel" id="step-3">
+    <div class="grid-2" style="gap:2rem">
+      <div>
+        <div class="card">
+          <h2 class="section-title" style="font-size:1.2rem">STEP 3 · 창작 과정 기록 정리</h2>
+          <p class="section-sub" style="margin-bottom:1rem">창작 경위를 명확히 기록하여 저작권 분쟁 대비 증거를 구축합니다.</p>
+
+          <div class="question-card">
+            <div class="q-num">Q1</div>
+            <div class="q-text">창작물의 최초 기획/제작 시점은?</div>
+            <input type="date" id="s3date" class="form-input">
+          </div>
+
+          <div class="question-card">
+            <div class="q-num">Q2</div>
+            <div class="q-text">제작 과정 및 수정 이력</div>
+            <textarea id="s3process" class="form-textarea" style="min-height:100px"
+              placeholder="최초 기획 → 초안 작성 → 수정 과정 → 완성..."></textarea>
+          </div>
+
+          <div class="question-card">
+            <div class="q-num">Q3</div>
+            <div class="q-text">공동 저작자가 있나요?</div>
+            <select id="s3coauthor" class="form-select">
+              <option value="없음">없음 (단독 창작)</option>
+              <option value="있음">있음</option>
+            </select>
+          </div>
+
+          <div class="question-card">
+            <div class="q-num">Q4</div>
+            <div class="q-text">공표(발행) 여부</div>
+            <select id="s3published" class="form-select">
+              <option value="미공표">미공표 (등록 후 공표 예정)</option>
+              <option value="공표됨">이미 공표됨</option>
+            </select>
+          </div>
+
+          <button class="btn btn-success btn-full" onclick="runStep3()">
+            📋 창작 경위서 자동 작성
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+            <h3 style="font-weight:700">창작 경위서</h3>
+            <div id="s3Loading" style="display:none"><div class="spinner"></div></div>
+          </div>
+          <div id="s3Result" class="result-box" style="min-height:400px">
+            <span style="color:var(--text-secondary)">창작 과정을 입력하고 실행하세요.</span>
+          </div>
+        </div>
+        <div style="text-align:right;margin-top:1rem">
+          <button class="btn btn-success" onclick="goStep(4)" id="s3Next" disabled>
+            다음: 보호 범위 확인 →
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════ STEP 4 ═══════════════════════════════ -->
+  <div class="step-panel" id="step-4">
+    <div class="grid-2" style="gap:2rem">
+      <div>
+        <div class="card">
+          <h2 class="section-title" style="font-size:1.2rem">STEP 4 · 저작권 보호 범위 명확화</h2>
+          <p class="section-sub" style="margin-bottom:1rem">보호 대상과 제외 요소를 명확히 정의하여 권리 범위를 확정합니다.</p>
+
+          <div class="form-group">
+            <label class="form-label">2차 저작물 허용 여부</label>
+            <select id="s4secondary" class="form-select">
+              <option value="불허">2차 저작물 허용 안 함 (완전 독점)</option>
+              <option value="허용">2차 저작물 허용 (저작자 표시 조건)</option>
+              <option value="CC">CC 라이선스 적용 예정</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">이용 허락 범위</label>
+            <select id="s4usage" class="form-select">
+              <option value="전용">전용 이용허락 (독점)</option>
+              <option value="통상">통상 이용허락 (비독점)</option>
+              <option value="오픈">오픈소스 / 공개</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">추가 보호 희망 사항</label>
+            <textarea id="s4extra" class="form-textarea"
+              placeholder="특별히 보호하고 싶은 요소나 사용 제한 조건..."></textarea>
+          </div>
+
+          <button class="btn btn-success btn-full" onclick="runStep4()">
+            🛡️ 보호 범위 분석 실행
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+            <h3 style="font-weight:700">보호 범위 분석 결과</h3>
+            <div id="s4Loading" style="display:none"><div class="spinner"></div></div>
+          </div>
+          <div id="s4Result" class="result-box" style="min-height:380px">
+            <span style="color:var(--text-secondary)">분석 실행 후 보호 범위가 정의됩니다.</span>
+          </div>
+        </div>
+        <div style="text-align:right;margin-top:1rem">
+          <button class="btn btn-success" onclick="goStep(5)" id="s4Next" disabled>
+            다음: 등록 신청서 작성 →
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════ STEP 5 ═══════════════════════════════ -->
+  <div class="step-panel" id="step-5">
+    <div class="grid-2" style="gap:2rem">
+      <div>
+        <div class="card">
+          <h2 class="section-title" style="font-size:1.2rem">STEP 5 · 등록 신청서 자동 작성</h2>
+          <p class="section-sub" style="margin-bottom:1rem">한국저작권위원회 제출용 등록 신청서를 자동 완성합니다.</p>
+
+          <div class="form-group">
+            <label class="form-label">저작자 성명</label>
+            <input type="text" id="s5author" class="form-input" placeholder="홍길동">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">저작자 국적</label>
+            <input type="text" id="s5nationality" class="form-input" value="대한민국">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">저작자 유형</label>
+            <select id="s5authorType" class="form-select">
+              <option value="개인">개인 (자연인)</option>
+              <option value="법인">법인 / 단체</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">권리자 (저작재산권자)</label>
+            <input type="text" id="s5rightowner" class="form-input"
+              placeholder="저작자와 동일하면 동일 입력">
+          </div>
+
+          <button class="btn btn-success btn-full" onclick="runStep5()">
+            📄 등록 신청서 자동 작성
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+            <h3 style="font-weight:700">등록 신청서 초안</h3>
+            <div id="s5Loading" style="display:none"><div class="spinner"></div></div>
+          </div>
+          <div id="s5Result" class="result-box" style="min-height:400px">
+            <span style="color:var(--text-secondary)">정보 입력 후 자동 작성됩니다.</span>
+          </div>
+        </div>
+        <div style="text-align:right;margin-top:1rem">
+          <button class="btn btn-success" onclick="goStep(6)" id="s5Next" disabled>
+            다음: 최종 서류 완성 →
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════ STEP 6 ═══════════════════════════════ -->
+  <div class="step-panel" id="step-6">
+    <div class="card" style="margin-bottom:1.5rem">
+      <h2 class="section-title" style="font-size:1.2rem">STEP 6 · 최종 저작권 등록 서류 완성</h2>
+      <p class="section-sub" style="margin-bottom:1rem">제출 가능한 완성 서류 패키지를 생성합니다.</p>
+
+      <div style="display:flex;gap:1rem;flex-wrap:wrap">
+        <button class="btn btn-success btn-lg" onclick="runStep6()">
+          📦 최종 서류 패키지 생성
+        </button>
+        <div id="s6Loading" style="display:none;align-items:center;gap:0.5rem">
+          <div class="spinner"></div>
+          <span style="color:var(--text-secondary);font-size:0.875rem">서류 생성 중...</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2" style="gap:1.5rem">
+      <!-- Document List -->
+      <div class="card">
+        <h3 style="font-weight:700;margin-bottom:1.25rem">📋 생성 서류 목록</h3>
+        <div id="s6DocList">
+          <div style="color:var(--text-secondary);font-size:0.875rem">서류 생성 후 목록이 표시됩니다.</div>
+        </div>
+      </div>
+
+      <!-- Checklist -->
+      <div class="card">
+        <h3 style="font-weight:700;margin-bottom:1.25rem">✅ 제출 체크리스트</h3>
+        <div id="s6Checklist">
+          <div style="color:var(--text-secondary);font-size:0.875rem">서류 생성 후 체크리스트가 표시됩니다.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:1.5rem">
+      <h3 style="font-weight:700;margin-bottom:1rem">📄 최종 등록 서류 (전체 내용)</h3>
+      <div id="s6FinalDoc" class="result-box" style="min-height:400px">
+        <span style="color:var(--text-secondary)">최종 서류 생성 버튼을 클릭하세요.</span>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:1rem;margin-top:1.5rem;flex-wrap:wrap">
+      <button class="btn btn-success btn-lg" onclick="printCopyright()">
+        🖨️ PDF 출력
+      </button>
+      <button class="btn btn-secondary btn-lg" onclick="copyCopyright()">
+        📋 전체 복사
+      </button>
+      <a href="dashboard.html" class="btn btn-outline btn-lg">
+        📊 포트폴리오에 추가
+      </a>
+      <a href="index.html" class="btn btn-outline btn-lg">
+        🔄 새 프로젝트
+      </a>
+    </div>
+  </div>
+
+</div><!-- /page-content -->
+
+<script src="assets/js/common.js"></script>
+<script src="assets/js/layout.js"></script>
+<script>
+let currentStep = 1;
+const stepResults = {};
+let proj = {};
+let selectedType = '문서/글';
+
+window.addEventListener('DOMContentLoaded', () => {
+  proj = getProject() || {};
+  const bar = document.getElementById('projectInfoBar');
+  if (proj.title) {
+    bar.innerHTML = `<strong>${proj.title}</strong> · ${proj.industry || '분야 미지정'} · ${proj.idea ? proj.idea.substring(0,80)+'...' : ''}`;
+    if (proj.title) document.getElementById('s1Title').value = proj.title;
+    if (proj.idea) document.getElementById('s1Content').value = proj.idea;
+  } else {
+    bar.innerHTML = `<span style="color:rgba(255,200,100,0.9)">⚠ 홈에서 프로젝트 정보를 입력해주세요.</span>`;
+  }
+});
+
+function goStep(n) {
+  document.getElementById(`step-${currentStep}`).classList.remove('active');
+  document.getElementById(`nav-${currentStep}`).classList.remove('active');
+  currentStep = n;
+  document.getElementById(`step-${n}`).classList.add('active');
+  document.getElementById(`nav-${n}`).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function markDone(n) {
+  const btn = document.getElementById(`nav-${n}`);
+  if (btn) { btn.classList.remove('active'); btn.classList.add('done'); }
+}
+
+function selectType(type) {
+  selectedType = type;
+  document.querySelectorAll('.type-card').forEach(el => el.classList.remove('selected'));
+  const map = { '문서/글':'doc','프로그램 코드':'code','디자인/시각':'design','음악':'music','영상':'video','플랫폼/시스템':'platform' };
+  const el = document.getElementById('type_' + map[type]);
+  if (el) el.classList.add('selected');
+}
+
+// ─────────────────────────────────────
+// STEP 1 - Type Classification
+// ─────────────────────────────────────
+async function runStep1() {
+  const title = document.getElementById('s1Title').value.trim();
+  const content = document.getElementById('s1Content').value.trim();
+  if (!title || !content) { showToast('제목과 내용을 입력해주세요.', 'warning'); return; }
+
+  const prompt = `당신은 저작권 전문가 AI입니다. 아래 창작물을 분석하여 저작권 등록 전략을 수립해주세요.
+
+[창작물 제목] ${title}
+[창작물 유형] ${selectedType}
+[창작물 내용]
+${content}
+
+다음 구조로 분석해주세요:
+
+## 1. 저작물 유형 정밀 분류
+해당 창작물의 법적 저작물 유형과 분류 근거 설명.
+(문학저작물/음악저작물/연극저작물/미술저작물/건축저작물/사진저작물/영상저작물/도형저작물/컴퓨터프로그램저작물)
+
+## 2. 저작권 보호 가능성 평가
+창작성 요건 충족 여부와 보호 가능성 평가. (높음/보통/주의 필요)
+
+## 3. 등록 시 기대 효과
+저작권 등록이 가져다 줄 법적·실무적 이점.
+
+## 4. 유사 저작물 존재 가능성
+동일하거나 유사한 기존 저작물 존재 가능성 및 대응 방안.
+
+## 5. 등록 전략 권고
+최적의 저작권 등록 전략과 주의사항.
+
+## 6. 첨부 자료 준비 목록
+등록 신청 시 필요한 자료 목록.
+
+한국 저작권법 기준으로 전문적으로 작성해주세요.`;
+
+  const loading = document.getElementById('s1Loading');
+  const result = document.getElementById('s1Result');
+  loading.style.display = 'block';
+  result.innerHTML = '';
+
+  try {
+    let fullText = '';
+    await callGemini(prompt, (chunk, full) => {
+      fullText = full;
+      result.innerHTML = formatMarkdown(full);
+    });
+    stepResults.step1 = fullText;
+    saveProject({ step1_copy: fullText, copyTitle: title, copyType: selectedType });
+    document.getElementById('s1Next').disabled = false;
+    markDone(1);
+    showToast('유형 분류 완료!', 'success');
+  } catch (e) {
+    result.innerHTML = `<span style="color:#f87171">오류: ${e.message}</span>`;
+    showToast(e.message, 'error');
+  } finally {
+    loading.style.display = 'none';
+  }
+}
+
+// ─────────────────────────────────────
+// STEP 2 - Creativity Analysis
+// ─────────────────────────────────────
+async function runStep2() {
+  const q1 = document.getElementById('s2q1').value;
+  const q2 = document.getElementById('s2q2').value;
+  const q3 = document.getElementById('s2q3').value;
+  const step1 = stepResults.step1 || '';
+
+  const prompt = `저작권 창작성 분석 전문가입니다.
+
+[저작물 분석 내용]
+${step1.substring(0, 400)}
+[독창적인 부분] ${q1}
+[기존 저작물과의 차이] ${q2}
+[외부 참고 자료] ${q3 || '없음'}
+
+다음 구조로 창작성 진술서를 작성해주세요:
+
+## 1. 창작성 분석
+
+### 1.1 표현의 독창성
+창작물의 표현 방식에서 발현된 독창성 분석.
+
+### 1.2 구성의 독창성
+전체 구성, 구조, 배열의 독창성 분석.
+
+### 1.3 아이디어와 표현의 분리 원칙
+보호받는 '표현' vs 보호받지 않는 '아이디어' 구분.
+
+## 2. 창작성 진술서 초안
+공식 서류에 첨부 가능한 창작성 진술서 문안.
+
+## 3. 저작권 침해 유형 대비
+예상 가능한 침해 유형과 대응 방안.
+
+## 4. 창작성 강화 권고사항
+저작권 등록 전 창작성을 더 명확히 할 방법.
+
+한국 저작권법 제2조 기준으로 전문적으로 작성해주세요.`;
+
+  const loading = document.getElementById('s2Loading');
+  const result = document.getElementById('s2Result');
+  loading.style.display = 'block';
+  result.innerHTML = '';
+
+  try {
+    let fullText = '';
+    await callGemini(prompt, (chunk, full) => {
+      fullText = full;
+      result.innerHTML = formatMarkdown(full);
+    });
+    stepResults.step2 = fullText;
+    saveProject({ step2_copy: fullText });
+    document.getElementById('s2Next').disabled = false;
+    markDone(2);
+    showToast('창작성 분석 완료!', 'success');
+  } catch (e) {
+    result.innerHTML = `<span style="color:#f87171">오류: ${e.message}</span>`;
+    showToast(e.message, 'error');
+  } finally {
+    loading.style.display = 'none';
+  }
+}
+
+// ─────────────────────────────────────
+// STEP 3 - Creation History
+// ─────────────────────────────────────
+async function runStep3() {
+  const date = document.getElementById('s3date').value;
+  const process = document.getElementById('s3process').value;
+  const coauthor = document.getElementById('s3coauthor').value;
+  const published = document.getElementById('s3published').value;
+  const title = proj.title || document.getElementById('s1Title')?.value || '';
+
+  const prompt = `저작권 법무 전문가입니다. 아래 정보를 바탕으로 저작권 등록용 창작 경위서를 작성해주세요.
+
+[저작물명] ${title}
+[저작물 유형] ${selectedType}
+[최초 창작일] ${date || '미기재'}
+[창작 과정] ${process || '직접 창작'}
+[공동 저작자] ${coauthor}
+[공표 여부] ${published}
+
+다음 내용을 포함한 창작 경위서를 작성해주세요:
+
+## 창작 경위서
+
+1. 창작 동기 및 목적
+2. 창작 과정 상세 서술 (단계별)
+3. 독창성 발현 과정
+4. 공동 창작이 있는 경우 기여도 구분
+5. 외부 자료 활용 내역 및 출처
+6. 최초 완성 시점 및 공표 현황
+
+그리고 별도로:
+
+## 저작권 등록 핵심 서술문
+(등록 신청서의 '창작 동기 및 취지' 란에 기재할 200자 내외 공식 문안)
+
+## 주의사항
+이 창작 경위서 작성 시 반드시 확인해야 할 사항.
+
+공식 법적 문서 수준으로 작성해주세요.`;
+
+  const loading = document.getElementById('s3Loading');
+  const result = document.getElementById('s3Result');
+  loading.style.display = 'block';
+  result.innerHTML = '';
+
+  try {
+    let fullText = '';
+    await callGemini(prompt, (chunk, full) => {
+      fullText = full;
+      result.innerHTML = formatMarkdown(full);
+    });
+    stepResults.step3 = fullText;
+    saveProject({ step3_copy: fullText });
+    document.getElementById('s3Next').disabled = false;
+    markDone(3);
+    showToast('창작 경위서 작성 완료!', 'success');
+  } catch (e) {
+    result.innerHTML = `<span style="color:#f87171">오류: ${e.message}</span>`;
+    showToast(e.message, 'error');
+  } finally {
+    loading.style.display = 'none';
+  }
+}
+
+// ─────────────────────────────────────
+// STEP 4 - Protection Scope
+// ─────────────────────────────────────
+async function runStep4() {
+  const secondary = document.getElementById('s4secondary').value;
+  const usage = document.getElementById('s4usage').value;
+  const extra = document.getElementById('s4extra').value;
+
+  const prompt = `저작권 전문가입니다. 아래 조건에 맞는 저작권 보호 범위를 분석해주세요.
+
+[저작물 유형] ${selectedType}
+[2차 저작물] ${secondary}
+[이용 허락 범위] ${usage}
+[추가 보호 요청] ${extra || '없음'}
+
+## 1. 저작권 보호 대상
+구체적으로 무엇이 보호받는지 명확히 정의.
+
+## 2. 저작권 보호 제외 요소
+아이디어, 사실, 일반적 표현 등 보호 제외 대상 명시.
+
+## 3. 2차적 저작물 권리 구조
+번역, 편곡, 변형, 각색 등 2차적 저작물 허용 범위.
+
+## 4. 이용 허락 조건 설계
+라이선스 조건과 이용 허락 범위 상세.
+
+## 5. 권리 침해 판단 기준
+침해 vs 비침해의 판단 기준 사례.
+
+## 6. 권리 보호 강화 방안
+법적 보호를 최대화하기 위한 추가 조치.
+
+## 7. 국제 저작권 보호 (선택)
+베른 협약 등 국제 조약에 따른 해외 보호 범위.
+
+한국 저작권법 기준으로 명확하게 작성해주세요.`;
+
+  const loading = document.getElementById('s4Loading');
+  const result = document.getElementById('s4Result');
+  loading.style.display = 'block';
+  result.innerHTML = '';
+
+  try {
+    let fullText = '';
+    await callGemini(prompt, (chunk, full) => {
+      fullText = full;
+      result.innerHTML = formatMarkdown(full);
+    });
+    stepResults.step4 = fullText;
+    saveProject({ step4_copy: fullText });
+    document.getElementById('s4Next').disabled = false;
+    markDone(4);
+    showToast('보호 범위 분석 완료!', 'success');
+  } catch (e) {
+    result.innerHTML = `<span style="color:#f87171">오류: ${e.message}</span>`;
+    showToast(e.message, 'error');
+  } finally {
+    loading.style.display = 'none';
+  }
+}
+
+// ─────────────────────────────────────
+// STEP 5 - Registration Form
+// ─────────────────────────────────────
+async function runStep5() {
+  const author = document.getElementById('s5author').value.trim();
+  const nationality = document.getElementById('s5nationality').value;
+  const authorType = document.getElementById('s5authorType').value;
+  const rightowner = document.getElementById('s5rightowner').value.trim() || author;
+  const title = proj.title || document.getElementById('s1Title')?.value || '';
+  const date = document.getElementById('s3date')?.value || '';
+
+  const prompt = `저작권 등록 신청서 작성 전문가입니다.
+아래 정보로 한국저작권위원회 제출용 등록 신청서를 작성해주세요.
+
+[저작물명] ${title}
+[저작물 유형] ${selectedType}
+[저작자명] ${author || '홍길동'}
+[저작자 국적] ${nationality}
+[저작자 유형] ${authorType}
+[저작재산권자] ${rightowner}
+[창작일] ${date || '미기재'}
+
+다음 공식 형식으로 작성해주세요:
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+저 작 권 등 록 신 청 서
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【저작물 정보】
+• 저작물 제목:
+• 저작물 종류:
+• 창작 연월일:
+• 공표 여부 및 공표일:
+• 저작물 요약 설명: (200자 내외)
+
+【저작자 정보】
+• 성명(법인명):
+• 국적:
+• 주소:
+• 연락처:
+
+【저작재산권자 정보】
+• 성명:
+• 관계 (저작자와의 관계):
+
+【이용 허락 정보】
+• 이용 허락 범위:
+• 2차 저작물 작성 허용 여부:
+
+【신청인 서명 란】
+신청일: ____년 ____월 ____일
+신청인: ________________ (인)
+
+그 외 작성 시 주의사항과 첨부 서류 안내를 작성해주세요.`;
+
+  const loading = document.getElementById('s5Loading');
+  const result = document.getElementById('s5Result');
+  loading.style.display = 'block';
+  result.innerHTML = '';
+
+  try {
+    let fullText = '';
+    await callGemini(prompt, (chunk, full) => {
+      fullText = full;
+      result.innerHTML = formatMarkdown(full);
+    });
+    stepResults.step5 = fullText;
+    saveProject({ step5_copy: fullText });
+    document.getElementById('s5Next').disabled = false;
+    markDone(5);
+    showToast('등록 신청서 작성 완료!', 'success');
+  } catch (e) {
+    result.innerHTML = `<span style="color:#f87171">오류: ${e.message}</span>`;
+    showToast(e.message, 'error');
+  } finally {
+    loading.style.display = 'none';
+  }
+}
+
+// ─────────────────────────────────────
+// STEP 6 - Final Package
+// ─────────────────────────────────────
+async function runStep6() {
+  const loading = document.getElementById('s6Loading');
+  loading.style.display = 'flex';
+
+  // Show document list
+  document.getElementById('s6DocList').innerHTML = `
+    <div class="file-item"><span class="file-icon">📄</span><span class="file-name">저작권 등록 신청서</span><span class="badge badge-green">완료</span></div>
+    <div class="file-item"><span class="file-icon">📄</span><span class="file-name">창작 경위서</span><span class="badge badge-green">완료</span></div>
+    <div class="file-item"><span class="file-icon">📄</span><span class="file-name">창작성 진술서</span><span class="badge badge-green">완료</span></div>
+    <div class="file-item"><span class="file-icon">📄</span><span class="file-name">보호 범위 명세서</span><span class="badge badge-green">완료</span></div>
+    <div class="file-item"><span class="file-icon">📄</span><span class="file-name">저작물 요약본</span><span class="badge badge-yellow">생성 중</span></div>
+  `;
+
+  document.getElementById('s6Checklist').innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:0.75rem;font-size:0.875rem">
+      ${['등록 신청서 작성 완료','창작자 신원 확인 서류','창작물 원본 또는 사본','창작 경위서 첨부','수수료 납부 준비 (소프트웨어: 22,000원)','저작권위원회 온라인 신청'].map((item, i) => `
+        <div style="display:flex;align-items:center;gap:0.75rem">
+          <span style="color:#34d399;font-size:1rem">✓</span>
+          <span>${item}</span>
+        </div>`).join('')}
+    </div>
+    <div class="alert alert-info" style="margin-top:1rem">
+      한국저작권위원회 온라인 등록: copyright.or.kr
+    </div>
+  `;
+
+  const step1 = stepResults.step1 || '';
+  const step2 = stepResults.step2 || '';
+  const step3 = stepResults.step3 || '';
+  const step4 = stepResults.step4 || '';
+  const step5 = stepResults.step5 || '';
+  const title = proj.title || '';
+
+  const prompt = `저작권 등록 전문가입니다. 아래 분석 내용을 종합하여 최종 저작권 등록 패키지 서류를 완성해주세요.
+
+[저작물 분석]
+${step1.substring(0, 300)}
+[창작성 진술]
+${step2.substring(0, 300)}
+[창작 경위]
+${step3.substring(0, 300)}
+[보호 범위]
+${step4.substring(0, 300)}
+[등록 신청서]
+${step5.substring(0, 300)}
+
+다음 형식으로 최종 완성 문서를 작성해주세요:
+
+═══════════════════════════════════════
+저작권 등록 패키지 - ${title}
+AI-IP Strategy OS 생성
+═══════════════════════════════════════
+
+# 1. 저작권 등록 신청서 (최종본)
+(완성된 신청서 전문)
+
+# 2. 창작성 진술서
+(공식 제출용 진술서 전문)
+
+# 3. 창작 경위서
+(상세 창작 과정 기록)
+
+# 4. 저작권 보호 범위 명세
+(보호 대상 및 제한 사항)
+
+# 5. 저작물 요약 설명문
+(온라인 등록 시스템 입력용, 500자 이내)
+
+# 6. 제출 절차 안내
+단계별 제출 방법 안내.
+
+공식 제출 가능한 수준으로 작성해주세요.`;
+
+  try {
+    const finalDoc = document.getElementById('s6FinalDoc');
+    finalDoc.innerHTML = '';
+    let fullText = '';
+    await callGemini(prompt, (chunk, full) => {
+      fullText = full;
+      finalDoc.innerHTML = formatMarkdown(full);
+    });
+    stepResults.step6 = fullText;
+    saveProject({ step6_copy: fullText });
+
+    // Update file list status
+    document.querySelectorAll('#s6DocList .badge-yellow').forEach(el => {
+      el.textContent = '완료';
+      el.className = 'badge badge-green';
+    });
+
+    markDone(6);
+    showToast('저작권 등록 서류 패키지 완성!', 'success');
+  } catch (e) {
+    document.getElementById('s6FinalDoc').innerHTML = `<span style="color:#f87171">오류: ${e.message}</span>`;
+    showToast(e.message, 'error');
+  } finally {
+    loading.style.display = 'none';
+  }
+}
+
+function printCopyright() {
+  const content = stepResults.step6 || '서류를 먼저 생성해주세요.';
+  generatePDF(`저작권 등록 서류 - ${proj.title || ''}`, content);
+}
+
+function copyCopyright() {
+  const content = stepResults.step6 || '';
+  navigator.clipboard.writeText(content).then(() => showToast('클립보드에 복사되었습니다.', 'success'));
+}
+</script>
+</body>
+</html>
