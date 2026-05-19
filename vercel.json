@@ -1,0 +1,6 @@
+{
+  "buildCommand": "echo 'Build triggered at $(date)'",
+  "env": {
+    "BUILD_TIMESTAMP": "@now"
+  }
+}
