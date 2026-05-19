@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>특허 출원 프로세스 | AI-IP Strategy OS</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    .process-header {
+      background: linear-gradient(135deg, #0f2460 0%, #1e40af 50%, #4c1d95 100%);
+      padding: 3rem 2rem;
+      text-align: center;
+      border-bottom: 1px solid rgba(100,180,255,0.15);
+    }
+    .process-header h1 { color: #fcd34d !important; }
+    .process-header p  { color: rgba(255,255,255,0.82) !important; }
+
+    .process-timeline {
+      max-width: 1100px;
+      margin: 3rem auto;
+      padding: 0 2rem;
+    }
+    .process-item {
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      gap: 2rem;
+      margin-bottom: 3rem;
+      align-items: flex-start;
+    }
+    .process-step-num {
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: #3b82f6;
+      text-align: center;
+      border: 3px solid #3b82f6;
+      border-radius: 50%;
+      width: 80px;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(59,130,246,0.05);
+      position: relative;
+    }
+    .process-step-num::after {
+      content: '';
+      position: absolute;
+      width: 2px;
+      height: 100px;
+      background: linear-gradient(to bottom, #3b82f6, transparent);
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    .process-item:last-child .process-step-num::after {
+      display: none;
+    }
+    .process-content {
+      background: #fff;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 1.75rem 2rem;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      transition: all 0.3s;
+    }
+    .process-content:hover {
+      border-color: #3b82f6;
+      box-shadow: 0 8px 30px rgba(59,130,246,0.15);
+    }
+    .process-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 0.5rem;
+    }
+    .process-desc {
+      font-size: 0.95rem;
+      color: #475569;
+      line-height: 1.7;
+    }
+    .process-tag {
+      display: inline-block;
+      background: #dbeafe;
+      color: #1e40af;
+      padding: 0.4rem 0.9rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      margin-top: 0.75rem;
+    }
+    @media (max-width: 768px) {
+      .process-item {
+        grid-template-columns: 60px 1fr;
+        gap: 1rem;
+      }
+      .process-step-num {
+        width: 60px;
+        height: 60px;
+        font-size: 1.75rem;
+      }
+      .process-content {
+        padding: 1.25rem 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navbar injected by layout.js -->
+
+<!-- Header -->
+<div class="process-header">
+  <div class="container">
+    <h1 style="font-size:2.5rem;margin-bottom:0.75rem">특허 출원 AI 고도화 프로세스</h1>
+    <p style="font-size:1.05rem;margin-bottom:1rem">아이디어부터 등록까지 10단계의 체계적인 프로세스</p>
+    <div style="display:flex;justify-content:center;gap:1rem;flex-wrap:wrap">
+      <span class="badge badge-blue">AI 자동 분석</span>
+      <span class="badge badge-purple">특허청 규격</span>
+      <span class="badge badge-yellow">거절률 예측</span>
+    </div>
+  </div>
+</div>
+
+<!-- Process Timeline -->
+<div class="process-timeline">
+
+  <!-- Step 1 -->
+  <div class="process-item">
+    <div class="process-step-num">1</div>
+    <div class="process-content">
+      <div class="process-title">📌 발명 아이디어 입력</div>
+      <div class="process-desc">발명의 제목, 산업 분야, 핵심 내용, 관련 자료를 입력합니다. AI가 기본 정보를 수집하여 다음 단계를 준비합니다.</div>
+      <span class="process-tag">기초 정보 수집</span>
+    </div>
+  </div>
+
+  <!-- Step 2 -->
+  <div class="process-item">
+    <div class="process-step-num">2</div>
+    <div class="process-content">
+      <div class="process-title">🧠 기술 핵심 추출</div>
+      <div class="process-desc">Gemini AI가 입력된 아이디어에서 발명의 핵심을 자동 분석합니다. 기술 유형을 분류하고 주요 키워드를 추출합니다.</div>
+      <span class="process-tag">AI 자동 분석</span>
+    </div>
+  </div>
+
+  <!-- Step 3 -->
+  <div class="process-item">
+    <div class="process-step-num">3</div>
+    <div class="process-content">
+      <div class="process-title">🔍 글로벌 선행기술 분석</div>
+      <div class="process-desc">KIPRIS, USPTO, EPO 등 글로벌 데이터베이스에서 선행기술을 검색합니다. 신규성 위험과 차별성을 자동으로 평가합니다.</div>
+      <span class="process-tag">선행기술 검색</span>
+    </div>
+  </div>
+
+  <!-- Step 4 -->
+  <div class="process-item">
+    <div class="process-step-num">4</div>
+    <div class="process-content">
+      <div class="process-title">📊 차별성·신규성 판단</div>
+      <div class="process-desc">기존 기술과의 비교를 통해 본 발명의 신규성과 진보성을 전문가 수준으로 판단합니다. 취약점을 사전에 파악합니다.</div>
+      <span class="process-tag">차별성 분석</span>
+    </div>
+  </div>
+
+  <!-- Step 5 -->
+  <div class="process-item">
+    <div class="process-step-num">5</div>
+    <div class="process-content">
+      <div class="process-title">🔧 발명 구성요소 분해</div>
+      <div class="process-desc">발명을 구성하는 핵심 요소들을 체계적으로 분해합니다. 각 요소의 기능, 특성, 보호 중요도를 정의합니다.</div>
+      <span class="process-tag">아키텍처 분석</span>
+    </div>
+  </div>
+
+  <!-- Step 6 -->
+  <div class="process-item">
+    <div class="process-step-num">6</div>
+    <div class="process-content">
+      <div class="process-title">✍️ 청구항 자동 설계</div>
+      <div class="process-desc">독립항, 종속항, 회피설계 방어항을 AI가 자동으로 작성합니다. 최대한 넓은 권리 범위를 확보하며 심사 거절을 최소화합니다.</div>
+      <span class="process-tag">청구항 작성</span>
+    </div>
+  </div>
+
+  <!-- Step 7 -->
+  <div class="process-item">
+    <div class="process-step-num">7</div>
+    <div class="process-content">
+      <div class="process-title">📋 실시예·도면 자동 생성</div>
+      <div class="process-desc">구체적인 구현 사례와 변형 실시예를 생성합니다. 권리 범위를 확장하고 특허 강도를 높입니다.</div>
+      <span class="process-tag">실시예 작성</span>
+    </div>
+  </div>
+
+  <!-- Step 8 -->
+  <div class="process-item">
+    <div class="process-step-num">8</div>
+    <div class="process-content">
+      <div class="process-title">📊 특허 강도 점수화 (PSM & RSI)</div>
+      <div class="process-desc">신규성, 진보성, 산업성 등 7개 항목을 정량 평가하여 특허 점수(PSM)와 권리 강도 지수(RSI)를 산출합니다.</div>
+      <span class="process-tag">점수 평가</span>
+    </div>
+  </div>
+
+  <!-- Step 9 -->
+  <div class="process-item">
+    <div class="process-step-num">9</div>
+    <div class="process-content">
+      <div class="process-title">⚠️ 거절 확률 예측 & 보강</div>
+      <div class="process-desc">앙상블 ML 모델이 심사 거절 확률을 예측합니다. 취약 청구항 자동 보강 및 개선안을 제시합니다.</div>
+      <span class="process-tag">위험 분석</span>
+    </div>
+  </div>
+
+  <!-- Step 10 -->
+  <div class="process-item">
+    <div class="process-step-num">10</div>
+    <div class="process-content">
+      <div class="process-title">🎯 경쟁사 아이디어 회피 이유 분석</div>
+      <div class="process-desc">경쟁사들이 같은 아이디어를 무시한 이유를 심층 분석합니다. 경쟁사들이 왜 나와 같은 아이디어를 놓쳤거나 무시했을까, 근거와 이유를 정리해 줍니다.</div>
+      <span class="process-tag">경쟁력 분석</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- Footer injected by layout.js -->
+
+<script src="assets/js/common.js"></script>
+<script src="assets/js/layout.js"></script>
+</body>
+</html>
