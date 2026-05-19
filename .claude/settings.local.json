@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:50-09-patentvebecodingprocess.vercel.app)",
+      "Bash(Get-ChildItem -Path \"C:\\\\01 클로드코드\\\\50-09 특허-저작권 솔루션\" -Recurse -Name)",
+      "Bash(Select-String \"process\")",
+      "Bash(git add *)",
+      "Bash(git commit -m 'Add process2.html with 10-step patent application process flowchart *)",
+      "Bash(git push *)",
+      "Bash(vercel --prod)",
+      "Bash(curl -s -I \"https://50-09-patentvebecodingprocess.vercel.app/process2.html\")",
+      "Bash(git commit *)",
+      "Bash(curl -s \"https://50-09-patentvebecodingprocess.vercel.app/process2.html\")",
+      "Read(//tmp/**)"
+    ]
+  }
+}
